@@ -49,3 +49,5 @@ done
 
 echo "Done. Artifacts in $OUT_DIR/:"
 ls -la "$OUT_DIR"
+echo
+echo "Verify with: scripts/verify-release.sh $OUT_DIR"

@@ -19,6 +19,7 @@ type Config struct {
 
 	Plain   bool
 	NoColor bool
+	Color   bool
 	JSON    bool
 	Stats   bool
 
@@ -39,7 +40,7 @@ type Config struct {
 // Default returns the zero-config defaults.
 func Default() Config {
 	return Config{
-		WindowSeconds:     60,
+		WindowSeconds:     15,
 		SpikeMultiplier:   8.0,
 		ProtectMultiplier: 3.0,
 		SeverityProtect:   severity.Error,
@@ -57,6 +58,7 @@ func Parse(args []string, out io.Writer) (Config, error) {
 
 	fs.BoolVar(&cfg.Plain, "plain", false, "plain-text output: no ANSI color or in-place cursor updates (auto-enabled when stdout is not a terminal)")
 	fs.BoolVar(&cfg.NoColor, "no-color", false, "disable ANSI color, keep live in-place counter updates if stdout is a terminal")
+	fs.BoolVar(&cfg.Color, "color", false, "force ANSI color even when stdout is not a terminal (e.g. piping through `less -R`, or capturing colored output to a file); -no-color still wins if both are given")
 	fs.BoolVar(&cfg.JSON, "json", false, "emit newline-delimited JSON events instead of human-formatted text")
 	fs.BoolVar(&cfg.Stats, "stats", false, "print a summary of processing statistics to stderr when the stream ends")
 
@@ -146,6 +148,7 @@ FLAGS
 	dummy := Default()
 	fs.BoolVar(&dummy.Plain, "plain", false, "plain-text output for pipes, CI, and saved files (auto-enabled when stdout is not a terminal)")
 	fs.BoolVar(&dummy.NoColor, "no-color", false, "disable ANSI color only")
+	fs.BoolVar(&dummy.Color, "color", false, "force ANSI color even when stdout is not a terminal")
 	fs.BoolVar(&dummy.JSON, "json", false, "newline-delimited JSON output")
 	fs.BoolVar(&dummy.Stats, "stats", false, "print processing statistics to stderr at the end")
 	fs.String("impact-report", "", "write an aggregate, content-free statistics report to this path")

@@ -2,17 +2,38 @@
 
 **LogQuiet makes noisy live logs readable by collapsing routine repetition while guaranteeing that new, error-level, and anomalously-frequent events always break through.**
 
-It is a local, zero-configuration Unix-style filter - pipe a log stream
-into it, get a readable stream back. No account, no cloud service, no
-LLM, no network calls, no telemetry.
-
 ```bash
 kubectl logs -f deployment/api | logquiet
 ```
 
-## Before / after
+## See it in action
 
-Raw input (synthetic example):
+A synthetic, high-volume application log with routine health-check/DB-status
+noise and one buried critical failure - both screenshots are real captured
+`logquiet` output against a checked-in fixture, not mockups (see
+[demo/README.md](demo/README.md) to reproduce them yourself):
+
+**Before** - the raw stream:
+
+![Raw, noisy log output before LogQuiet](assets/demo/before.png)
+
+**After** - piped through `logquiet`:
+
+![The same log after LogQuiet: noise collapsed, the critical failure and its traceback retained](assets/demo/after.png)
+
+```
+raw logs -> structural normalization -> routine noise collapsed -> important events remain visible
+```
+
+It is a local, zero-configuration Unix-style filter - pipe a log stream
+into it, get a readable stream back. No account, no cloud service, no
+LLM, no network calls, no telemetry.
+
+## Before / after, in text
+
+The same idea, as plain text so it's copy-pasteable (synthetic example):
+
+Raw input:
 
 ```
 2026-08-30 03:01:00 [INFO] Connection pool active. 42 connections open.
@@ -81,10 +102,15 @@ algorithm.
 
 ### Download a release binary
 
-Grab the archive for your platform from the
+Grab the binary for your platform from the
 [Releases page](https://github.com/azimsiddiqui/logquiet/releases) (Linux
-amd64/arm64, macOS Intel/Apple Silicon, Windows amd64), verify it against
-the published `SHA256SUMS.txt`, and put it on your `PATH`.
+amd64/arm64, macOS Intel/Apple Silicon, Windows amd64) alongside
+`SHA256SUMS.txt`, verify it (from the same directory you downloaded both
+into: `sha256sum -c SHA256SUMS.txt --ignore-missing`, or run
+`scripts/verify-release.sh` from this repo if you'd rather not worry about
+which directory you're in - see
+[docs/RELEASE_PROCESS.md](docs/RELEASE_PROCESS.md)), and put it on your
+`PATH`.
 
 ### Build from source
 
@@ -195,6 +221,13 @@ a routine counter:
    current:  280/min
 ```
 
+Real captured output for a brand-new error class bursting with zero prior
+history - the "bootstrap" case, labeled honestly as such rather than
+presenting an assumed baseline as a measured one (reproduce with
+`demo/run-frequency-spike.sh`):
+
+![LogQuiet surfacing a frequency-spike anomaly for a brand-new error bursting at high volume](assets/demo/frequency-spike.png)
+
 This uses a deterministic rolling-window-rate-vs-EWMA-baseline method -
 not machine learning, not an LLM, fully local - with severity-aware
 sensitivity (rare error classes are flagged at a lower multiplier than
@@ -214,6 +247,11 @@ per-language grammar; see
 [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) "Known limitations" for what
 it does and doesn't cover.
 
+Real captured output for a buried Python traceback (reproduce with
+`demo/run-stack-trace.sh`):
+
+![LogQuiet preserving a full Python traceback while collapsing the surrounding routine worker chatter](assets/demo/stack-trace.png)
+
 ## Modes
 
 | Flag | Behavior |
@@ -221,6 +259,7 @@ it does and doesn't cover.
 | *(none)* | Color, if stdout is a terminal; otherwise same as `--plain` |
 | `--plain` | No color, no cursor control - for pipes, CI, and saved files |
 | `--no-color` | Like the default, minus ANSI color codes |
+| `--color` | Force ANSI color even when not attached to a terminal (piping through `less -R`, capturing colored output) - `--no-color` wins if both are given |
 | `--json` | Newline-delimited JSON, one object per decision (`event`, `repeat_summary`, `repeat_final`, `anomaly`) |
 
 ## Statistics and impact reports
@@ -283,9 +322,14 @@ Stated plainly, not buried:
   characters mixing letters and digits (e.g. "sha256") will normalize to
   `[ID]` - a known, accepted precision/recall trade-off.
 - Frequency-spike detection is wall-clock based, which is correct for its
-  primary use case (live tailing) but means a very fast batch replay of a
-  static historical file may not accumulate enough real elapsed time to
-  warm up a baseline or detect a spike within that single run.
+  primary use case (live tailing). A brand-new severe error bursting
+  immediately (no prior history at all) is caught within seconds even in
+  a fast batch replay of a static file, via a dedicated bootstrap path -
+  see [docs/TECHNICAL_METHOD.md](docs/TECHNICAL_METHOD.md) section 7.
+  Detecting a spike in a pattern that already had an *established* low
+  rate still needs about 15 seconds of real elapsed time to learn that
+  rate, so a file that finishes replaying faster than that won't get
+  standard-path detection for such a pattern within that single run.
 - A pattern evicted from the bounded store and later seen again is
   treated as novel again - its history is gone, by design (see the
   bounded-memory guarantee above).

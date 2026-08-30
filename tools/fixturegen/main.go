@@ -8,6 +8,7 @@
 //
 //	go run ./tools/fixturegen correctness    # (re)writes fixtures/synthetic/*
 //	go run ./tools/fixturegen perf 1000000 mixed benchmarks/data/mixed-1m.log
+//	go run ./tools/fixturegen demo           # (re)writes demo/fixtures/*
 package main
 
 import (
@@ -27,6 +28,8 @@ func main() {
 	switch os.Args[1] {
 	case "correctness":
 		genCorrectness()
+	case "demo":
+		genDemo()
 	case "perf":
 		if len(os.Args) != 5 {
 			fmt.Fprintln(os.Stderr, "usage: fixturegen perf <lines> <repetitive|diverse|mixed> <outfile>")

@@ -111,6 +111,7 @@ func (p *Pipeline) handleBlock(block multiline.Block, now time.Time) {
 			RawLines:       block.Contents,
 			BaselinePerMin: spike.BaselinePerMin,
 			CurrentPerMin:  spike.CurrentPerMin,
+			Bootstrap:      spike.Bootstrap,
 		}, now)
 
 	case isNew:

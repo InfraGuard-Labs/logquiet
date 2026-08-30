@@ -7,6 +7,7 @@ import (
 	"bufio"
 	"flag"
 	"fmt"
+	"io"
 	"os"
 	"os/signal"
 	"sync"
@@ -48,7 +49,7 @@ func run(args []string, stdin *os.File, stdout, stderr *os.File) int {
 	}
 	defer closeInput()
 
-	isTTY := isTerminal(stdout)
+	isTTY := isTerminal(stdout) || cfg.Color
 	ropts := render.DefaultOptions()
 	ropts.IsTTY = isTTY
 	ropts.Plain = cfg.Plain || !isTTY
@@ -86,7 +87,31 @@ func run(args []string, stdin *os.File, stdout, stderr *os.File) int {
 		os.Exit(0)
 	}()
 
-	scanner := bufio.NewScanner(input)
+	scanErr := processStream(input, pl, &mu)
+
+	finish()
+	if scanErr != nil {
+		fmt.Fprintf(stderr, "logquiet: error reading input: %v\n", scanErr)
+		return 1
+	}
+	return 0
+}
+
+// processStream reads lines from r and feeds them to the pipeline until
+// EOF, the downstream renderer's output pipe breaks, or a read error.
+// mu guards pl and must be the same mutex the caller's signal handler and
+// finish() use.
+//
+// It returns the scanner's terminal error, or nil on a clean EOF.
+// bufio.Scanner.Scan returns false on both clean EOF and a genuine read
+// error and does not distinguish the two on its own - Err must be checked
+// explicitly by the caller, or a real input failure (a disk read error, a
+// device disconnecting, or any other error the underlying io.Reader
+// returns) is silently indistinguishable from normal end-of-stream, and
+// logquiet would exit 0 as if the whole input had been processed
+// successfully when it may have stopped partway through.
+func processStream(r io.Reader, pl *pipeline.Pipeline, mu *sync.Mutex) error {
+	scanner := bufio.NewScanner(r)
 	scanner.Buffer(make([]byte, 64*1024), reader.MaxLineBytes+4096)
 	scanner.Split(reader.BoundedLines(reader.MaxLineBytes, func() {
 		mu.Lock()
@@ -103,9 +128,7 @@ func run(args []string, stdin *os.File, stdout, stderr *os.File) int {
 			break
 		}
 	}
-
-	finish()
-	return 0
+	return scanner.Err()
 }
 
 func openInput(path string, stdin *os.File) (*os.File, func(), error) {
@@ -130,18 +153,22 @@ func isTerminal(f *os.File) bool {
 func printStats(w *os.File, pl *pipeline.Pipeline, now time.Time) {
 	snap := pl.Counters.Snapshot(now, pl.PatternCount(), pl.PatternsEvicted())
 	fmt.Fprintf(w, "\n--- logquiet stats ---\n")
-	fmt.Fprintf(w, "input lines:          %d\n", snap.InputLines)
-	fmt.Fprintf(w, "displayed events:     %d\n", snap.DisplayedEvents)
-	fmt.Fprintf(w, "suppressed events:    %d\n", snap.SuppressedEvents)
-	fmt.Fprintf(w, "suppression:          %.1f%%\n", snap.SuppressionPercent)
-	fmt.Fprintf(w, "structural patterns:  %d (evicted %d)\n", snap.StructuralPatterns, snap.PatternsEvicted)
-	fmt.Fprintf(w, "warnings surfaced:    %d\n", snap.WarningEvents)
-	fmt.Fprintf(w, "errors surfaced:      %d\n", snap.ErrorEvents)
-	fmt.Fprintf(w, "anomalies detected:   %d\n", snap.AnomalyEvents)
-	fmt.Fprintf(w, "truncated lines:      %d\n", snap.TruncatedLines)
-	fmt.Fprintf(w, "elapsed:              %.2fs\n", snap.ElapsedSeconds)
-	fmt.Fprintf(w, "rate:                 %.0f lines/sec, %.2f MB/sec\n", snap.LinesPerSecond, snap.MBPerSecond)
-	fmt.Fprintf(w, "approx memory:        %.1f MB\n", snap.ApproxMemoryMB)
+	fmt.Fprintf(w, "%-25s %d\n", "input lines:", snap.InputLines)
+	fmt.Fprintf(w, "%-25s %d\n", "displayed events:", snap.DisplayedEvents)
+	fmt.Fprintf(w, "%-25s %d\n", "suppressed events:", snap.SuppressedEvents)
+	fmt.Fprintf(w, "%-25s %.1f%%\n", "suppression:", snap.SuppressionPercent)
+	fmt.Fprintf(w, "%-25s %d (evicted %d)\n", "structural patterns:", snap.StructuralPatterns, snap.PatternsEvicted)
+	// "observed", not "surfaced" or "displayed": these count every WARN/
+	// ERROR+ occurrence seen in the input, including ones collapsed into a
+	// repeat counter rather than shown individually - see
+	// docs/IMPACT_REPORT.md for the precise definition.
+	fmt.Fprintf(w, "%-25s %d\n", "warning events observed:", snap.WarningEvents)
+	fmt.Fprintf(w, "%-25s %d\n", "error events observed:", snap.ErrorEvents)
+	fmt.Fprintf(w, "%-25s %d\n", "anomalies detected:", snap.AnomalyEvents)
+	fmt.Fprintf(w, "%-25s %d\n", "truncated lines:", snap.TruncatedLines)
+	fmt.Fprintf(w, "%-25s %.2fs\n", "elapsed:", snap.ElapsedSeconds)
+	fmt.Fprintf(w, "%-25s %.0f lines/sec, %.2f MB/sec\n", "rate:", snap.LinesPerSecond, snap.MBPerSecond)
+	fmt.Fprintf(w, "%-25s %.1f MB\n", "approx memory:", snap.ApproxMemoryMB)
 }
 
 func writeImpactReport(path string, pl *pipeline.Pipeline, now time.Time) error {

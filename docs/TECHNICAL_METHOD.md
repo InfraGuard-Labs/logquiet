@@ -247,23 +247,54 @@ automatically noise. An error occurring far more often than its own
 historical baseline is itself the most important signal in the stream, and
 must not be quietly absorbed into "just another repeat counter."
 
-**Method** (`internal/pattern.State`): each pattern keeps a ring buffer of
-fixed-width time buckets (default: 12 buckets × 5s = a 60-second rolling
-"current rate" window). As a bucket ages out of that window, its rate is
-folded into a slow exponentially weighted moving average that represents
-the pattern's learned "normal" rate:
+### History: the first version was too slow to be useful, and this was found and fixed
+
+The first shipped version gated all detection behind a flat, unconditional
+`now.Sub(FirstSeen) >= 2 minutes` timer, checked before anything else in
+`State.Record`. That meant no anomaly of any kind - however severe, however
+far outside any reasonable baseline - could ever be flagged during a
+pattern's first two minutes of existence, and a brand-new pattern (the
+common case for "a severe error just started happening") had no path to
+detection at all, ever, since it never accumulates a "prior" baseline to
+be compared against. Manual testing against realistic short sessions (a
+rapid burst of a brand-new ERROR, and an established low-rate pattern
+followed by a sudden burst) reported zero anomalies in both cases - this
+was reported, reproduced, root-caused, and is fixed as described below.
+The redesign also found and fixed a second, subtler issue during
+validation: with the original 60-second current-rate window, a burst that
+had only just started was diluted by the quiet time still sitting in the
+rest of that same fixed-length window, making detection marginal and
+inconsistent from run to run - not a rare edge case, but the normal
+shape of "a spike just started."
+
+### Current method (`internal/pattern.State`)
+
+Each pattern keeps a ring buffer of fixed-width time buckets (default: 3
+buckets × 5s = a **15-second** "current rate" window - short and
+deliberately so; see the rationale in the package doc comment in
+`internal/pattern/pattern.go`, summarized below). Every time a bucket
+finishes accumulating - starting from the very first one, not only once a
+full window has cycled - its rate is folded into a slow exponentially
+weighted moving average that represents the pattern's learned "normal"
+rate:
 
 ```
 baseline = alpha * observed_bucket_rate + (1 - alpha) * baseline   (alpha = 0.05 by default)
 ```
 
-A spike is flagged when **all** of the following hold:
+Baseline quality does not depend on the current-rate window's length: it
+is a lifetime average over every bucket ever folded, not a function of how
+many buckets are held in the ring at once. Shrinking the window (from an
+original 60s to 15s) therefore made burst detection dramatically faster
+and more reliable without making the learned baseline any less
+representative.
 
-- The pattern has existed for at least `WarmupDuration` (default 2
-  minutes) - a brand-new pattern's very first burst is not an "anomaly"
-  relative to a baseline it hasn't earned yet; novelty surfacing (section
-  4) already makes new patterns visible.
-- The current 60-second-window rate exceeds the baseline by at least
+**Standard path - a pattern with an established baseline.** Once at least
+`MinBaselineSamples` buckets (default 3, i.e. about 15 seconds of real
+elapsed history) have been folded in, the baseline is trusted, and a spike
+is flagged when **all** of the following hold:
+
+- The current 15-second-window rate exceeds the baseline by at least
   `SpikeMultiplier` (default 8x for ordinary severities, `ProtectMultiplier`
   = 3x for severities at or above `-severity-protect`, default ERROR - a
   rare error class is treated as newsworthy at a lower bar than routine
@@ -275,16 +306,61 @@ A spike is flagged when **all** of the following hold:
   this exact pattern - so a sustained spike produces periodic alerts, not
   one per occurrence.
 
-This is a rolling-baseline-ratio method with an EWMA baseline - a
-well-established, explainable statistical process-control technique (see
+**Bootstrap path - a pattern with no trustworthy baseline yet.** This
+covers exactly the case the standard path structurally cannot: a pattern
+that is brand new, or too young to have `MinBaselineSamples` of real
+history, but is already firing at a severe, sustained rate - "a rapid
+burst of repeated ERROR database timeout events" reported during manual
+testing is precisely this shape. This path applies **only** to severities
+at or above `-severity-protect` (default ERROR); an ordinary INFO/DEBUG
+pattern with no baseline yet is never bootstrap-flagged, however high its
+absolute rate, which is what keeps a routine high-frequency INFO stream
+from ever producing a false positive (see the worked scenarios below). For
+a protected severity with no trustworthy baseline, an assumed baseline
+(`AssumedBaselinePerMin`, default 1.0/min - "we assume a brand-new error
+class would not normally recur more than about once a minute") stands in
+for the missing real one, and a spike fires once the window holds at least
+`MinBootstrapEvents` (default 10, deliberately higher than the standard
+path's `MinWindowEvents`, so a merely-new-but-modest error occurring a
+handful of times is not elevated to a spike banner) events at a rate
+exceeding `AssumedBaselinePerMin * multiplier`. The rendered banner labels
+this case explicitly as "(new pattern)" with "no prior history", rather
+than presenting the assumed number as if it had been measured - see
+`internal/render.Renderer.EmitAnomaly`.
+
+If a bootstrap-flagged pattern's elevated rate persists, the standard path
+naturally takes over once real history accumulates: the baseline EWMA
+converges toward the new steady rate, and once `current < baseline *
+multiplier` holds against that now-accurate baseline, alerts stop - a
+permanently-elevated-but-stable rate becomes "the new normal" rather than
+alerting forever (verified by
+`pattern.TestF_LongRunningStreamBaselineEventuallyAdapts`).
+
+### Worked scenarios (each has an automated test in `internal/pattern/pattern_test.go`)
+
+| Scenario | Path | Outcome |
+|---|---|---|
+| A: stable routine pattern, indefinitely | - | No baseline ever exceeded; never alarms |
+| B: established low-rate pattern, then a sudden large increase | Standard | Flagged, using the pattern's own real learned baseline |
+| C: brand-new severe ERROR/CRITICAL, immediate burst, no history | Bootstrap | Flagged within seconds, labeled "(new pattern)" |
+| C (variant): a new error type occurs only a handful of times | Bootstrap (does not fire) | Below `MinBootstrapEvents`; shown via ordinary novelty/severity display, not elevated to a spike |
+| D: routine high-frequency INFO from the very start | Neither | Bootstrap never applies to ordinary severities; once a baseline forms it matches the pattern's own steady rate |
+| E: short-lived stream, ordinary-severity burst | Neither | Correctly not flagged - too little data, not a protected severity |
+| E: short-lived stream, severe burst | Bootstrap | Still flagged even in a stream only a few seconds long |
+| F: long-running stream, sustained spike | Standard, cooldown-bounded | Periodic alerts, not one per occurrence |
+| F: long-running stream, permanent rate change | Standard, self-correcting | Alerts stop once baseline converges to the new rate |
+
+This is a rolling-baseline-ratio method with an EWMA baseline, plus a
+severity-gated bootstrap fallback for the no-baseline case - both are
+well-established, explainable statistical process-control techniques (see
 [PRIOR_ART.md](PRIOR_ART.md) section 3), deliberately chosen over
 heavier alternatives (Holt-Winters, CUSUM, z-score) for a first version:
-it is easy to explain, easy to tune with two numbers, and its failure
-modes are easy to reason about. It is not machine learning and does not
-claim to be state-of-the-art anomaly detection - see the README's
-Limitations section for when it will and won't catch a real incident
-(e.g., a slow multi-hour ramp may never cross the instantaneous multiplier
-threshold at any single point, since the baseline adapts alongside it).
+easy to explain, easy to tune, and its failure modes are easy to reason
+about. It is not machine learning and does not claim to be
+state-of-the-art anomaly detection - see the README's Limitations section
+for when it will and won't catch a real incident (e.g., a slow multi-hour
+ramp may never cross the instantaneous multiplier threshold at any single
+point, since the baseline adapts alongside it).
 
 ## 8. Severity awareness
 

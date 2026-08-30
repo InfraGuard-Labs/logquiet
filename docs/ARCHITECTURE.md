@@ -152,11 +152,20 @@ third-party terminal library.
   an unrecognized variable class not in the table.
 - Frequency-spike detection is wall-clock-based: it measures real elapsed
   processing time, which is the right measure for its primary use case
-  (live tailing), but means a very fast batch replay of a static historical
-  file (`cat file | logquiet`) may not accumulate enough real time to warm
-  up a baseline or detect a spike within that run. A future version could
-  optionally use each line's own embedded timestamp for offline analysis;
-  this is not implemented in v0.1.
+  (live tailing). A brand-new severe error bursting immediately is still
+  caught in a fast batch replay of a static file (`cat file | logquiet`)
+  via the bootstrap path, which only needs enough *events* to accumulate,
+  not real elapsed time (see
+  [TECHNICAL_METHOD.md](TECHNICAL_METHOD.md) section 7). The standard
+  path - comparing against a pattern's own *learned* baseline - does still
+  need `MinBaselineSamples` buckets (about 15 seconds by default) of real
+  elapsed time to complete, so a file that finishes replaying in well
+  under that window won't get standard-path detection for a pattern that
+  had an established low rate and then spiked within that same short
+  run. A future version could optionally use each line's own embedded
+  timestamp for offline analysis so a fast replay can simulate elapsed
+  time instead of measuring it in real wall-clock terms; this is not
+  implemented in v0.1.
 - A pattern evicted from the bounded LRU store and later reappearing is
   treated as novel again (its history is gone) - a deliberate, documented
   consequence of the bounded-memory guarantee, not a bug.

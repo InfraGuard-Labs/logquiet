@@ -1,0 +1,38 @@
+2026-08-30 09:00:00 [INFO] worker received task task-5000
+2026-08-30 09:00:01 [INFO] worker received task task-5001
+2026-08-30 09:00:02 [INFO] worker received task task-5002
+2026-08-30 09:00:03 [INFO] worker received task task-5003
+2026-08-30 09:00:04 [INFO] worker received task task-5004
+2026-08-30 09:00:05 [INFO] worker received task task-5005
+2026-08-30 09:00:06 [INFO] worker received task task-5006
+2026-08-30 09:00:07 [INFO] worker received task task-5007
+2026-08-30 09:00:08 [INFO] worker received task task-5008
+2026-08-30 09:00:09 [INFO] worker received task task-5009
+2026-08-30 09:00:10 [INFO] worker received task task-5010
+2026-08-30 09:00:11 [INFO] worker received task task-5011
+2026-08-30 09:00:12 [INFO] worker received task task-5012
+2026-08-30 09:00:13 [INFO] worker received task task-5013
+2026-08-30 09:00:14 [INFO] worker received task task-5014
+2026-08-30 09:00:15 [INFO] worker received task task-5015
+2026-08-30 09:00:16 [ERROR] Traceback (most recent call last):
+2026-08-30 09:00:16   File "/app/worker.py", line 88, in process
+2026-08-30 09:00:16     result = transform(payload)
+2026-08-30 09:00:16   File "/app/transform.py", line 12, in transform
+2026-08-30 09:00:16     return payload["amount"] / payload["rate"]
+2026-08-30 09:00:16 [ERROR] ZeroDivisionError: division by zero
+2026-08-30 09:00:17 [INFO] worker received task task-6000
+2026-08-30 09:00:18 [INFO] worker received task task-6001
+2026-08-30 09:00:19 [INFO] worker received task task-6002
+2026-08-30 09:00:20 [INFO] worker received task task-6003
+2026-08-30 09:00:21 [INFO] worker received task task-6004
+2026-08-30 09:00:22 [INFO] worker received task task-6005
+2026-08-30 09:00:23 [INFO] worker received task task-6006
+2026-08-30 09:00:24 [INFO] worker received task task-6007
+2026-08-30 09:00:25 [INFO] worker received task task-6008
+2026-08-30 09:00:26 [INFO] worker received task task-6009
+2026-08-30 09:00:27 [INFO] worker received task task-6010
+2026-08-30 09:00:28 [INFO] worker received task task-6011
+2026-08-30 09:00:29 [INFO] worker received task task-6012
+2026-08-30 09:00:30 [INFO] worker received task task-6013
+2026-08-30 09:00:31 [INFO] worker received task task-6014
+2026-08-30 09:00:32 [INFO] worker received task task-6015

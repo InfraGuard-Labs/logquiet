@@ -1,0 +1,49 @@
+2026-08-30 09:00:00 [INFO] request handled path=/api/v1/orders status=200 dur=12ms
+2026-08-30 09:00:01 [INFO] request handled path=/api/v1/orders status=200 dur=12ms
+2026-08-30 09:00:02 [INFO] request handled path=/api/v1/orders status=200 dur=12ms
+2026-08-30 09:00:03 [INFO] request handled path=/api/v1/orders status=200 dur=12ms
+2026-08-30 09:00:04 [INFO] request handled path=/api/v1/orders status=200 dur=12ms
+2026-08-30 09:00:05 [INFO] request handled path=/api/v1/orders status=200 dur=12ms
+2026-08-30 09:00:06 [INFO] request handled path=/api/v1/orders status=200 dur=12ms
+2026-08-30 09:00:07 [INFO] request handled path=/api/v1/orders status=200 dur=12ms
+2026-08-30 09:00:08 [INFO] request handled path=/api/v1/orders status=200 dur=12ms
+2026-08-30 09:00:09 [INFO] request handled path=/api/v1/orders status=200 dur=12ms
+2026-08-30 09:00:10 [INFO] request handled path=/api/v1/orders status=200 dur=12ms
+2026-08-30 09:00:11 [INFO] request handled path=/api/v1/orders status=200 dur=12ms
+2026-08-30 09:00:12 [INFO] request handled path=/api/v1/orders status=200 dur=12ms
+2026-08-30 09:00:13 [INFO] request handled path=/api/v1/orders status=200 dur=12ms
+2026-08-30 09:00:14 [INFO] request handled path=/api/v1/orders status=200 dur=12ms
+2026-08-30 09:00:15 [INFO] request handled path=/api/v1/orders status=200 dur=12ms
+2026-08-30 09:00:16 [INFO] request handled path=/api/v1/orders status=200 dur=12ms
+2026-08-30 09:00:17 [INFO] request handled path=/api/v1/orders status=200 dur=12ms
+2026-08-30 09:00:18 [INFO] User 90210 requested page /account
+2026-08-30 09:00:19 [INFO] request handled path=/api/v1/orders status=200 dur=14ms
+2026-08-30 09:00:20 [INFO] request handled path=/api/v1/orders status=200 dur=14ms
+2026-08-30 09:00:21 [INFO] request handled path=/api/v1/orders status=200 dur=14ms
+2026-08-30 09:00:22 [INFO] request handled path=/api/v1/orders status=200 dur=14ms
+2026-08-30 09:00:23 [INFO] request handled path=/api/v1/orders status=200 dur=14ms
+2026-08-30 09:00:24 [INFO] request handled path=/api/v1/orders status=200 dur=14ms
+2026-08-30 09:00:25 [INFO] request handled path=/api/v1/orders status=200 dur=14ms
+2026-08-30 09:00:26 [INFO] request handled path=/api/v1/orders status=200 dur=14ms
+2026-08-30 09:00:27 [INFO] request handled path=/api/v1/orders status=200 dur=14ms
+2026-08-30 09:00:28 [INFO] request handled path=/api/v1/orders status=200 dur=14ms
+2026-08-30 09:00:29 [ERROR] database timeout on host 10.0.1.45: connection refused
+2026-08-30 09:00:30 [ERROR] database timeout on host 10.0.1.45: connection refused
+2026-08-30 09:00:31 [ERROR] database timeout on host 10.0.1.45: connection refused
+2026-08-30 09:00:32 [ERROR] database timeout on host 10.0.1.45: connection refused
+2026-08-30 09:00:33 [ERROR] database timeout on host 10.0.1.45: connection refused
+2026-08-30 09:00:34 [ERROR] database timeout on host 10.0.1.45: connection refused
+2026-08-30 09:00:35 [ERROR] database timeout on host 10.0.1.45: connection refused
+2026-08-30 09:00:36 [ERROR] database timeout on host 10.0.1.45: connection refused
+2026-08-30 09:00:37 [ERROR] database timeout on host 10.0.1.45: connection refused
+2026-08-30 09:00:38 [ERROR] database timeout on host 10.0.1.45: connection refused
+2026-08-30 09:00:39 [ERROR] database timeout on host 10.0.1.45: connection refused
+2026-08-30 09:00:40 [ERROR] database timeout on host 10.0.1.45: connection refused
+2026-08-30 09:00:41 [ERROR] database timeout on host 10.0.1.45: connection refused
+2026-08-30 09:00:42 [ERROR] database timeout on host 10.0.1.45: connection refused
+2026-08-30 09:00:43 [ERROR] database timeout on host 10.0.1.45: connection refused
+2026-08-30 09:00:44 [ERROR] database timeout on host 10.0.1.45: connection refused
+2026-08-30 09:00:45 [ERROR] database timeout on host 10.0.1.45: connection refused
+2026-08-30 09:00:46 [ERROR] database timeout on host 10.0.1.45: connection refused
+2026-08-30 09:00:47 [ERROR] database timeout on host 10.0.1.45: connection refused
+2026-08-30 09:00:48 [ERROR] database timeout on host 10.0.1.45: connection refused

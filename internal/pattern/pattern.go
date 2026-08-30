@@ -6,16 +6,39 @@
 // Algorithm summary (see docs/TECHNICAL_METHOD.md for full rationale):
 //
 //  1. Each pattern keeps a ring buffer of fixed-width time buckets covering
-//     a short "current" window (default 60s / 12x5s buckets).
-//  2. As buckets age out of that window, their rate is folded into a slow
-//     exponentially-weighted moving average (EWMA) that represents the
-//     pattern's learned "normal" rate.
-//  3. A spike is flagged when the current-window rate exceeds the baseline
-//     by a configurable multiplier AND clears an absolute minimum count (so
-//     a baseline near zero cannot be "exceeded" by a single stray event),
-//     AND the pattern has existed long enough to have a meaningful
-//     baseline, AND a per-pattern cooldown has elapsed since the last
-//     alert for that pattern.
+//     a short "current" window (default 15s / 3x5s buckets). This window
+//     is deliberately short: a longer window (an earlier version used 60s)
+//     dilutes a burst that has only just started, since the rate is
+//     computed as events-in-window / window-duration and a fixed-length
+//     denominator does not shrink just because the burst is new - a burst
+//     lasting only a few seconds gets averaged down by the quiet time
+//     still sitting in the rest of a long window, making detection slow
+//     and, worse, marginal/inconsistent right at the threshold boundary.
+//     Baseline quality is unaffected by this window's length: baseline is
+//     a lifetime exponentially weighted average over every bucket ever
+//     folded (point 2 below), not a function of how many buckets are held
+//     at once.
+//  2. Baseline formation is data-driven, not a flat wall-clock timer: every
+//     time a bucket finishes accumulating (every BucketWidth, starting from
+//     the very first one), its rate is folded into a slow exponentially
+//     weighted moving average that represents the pattern's learned
+//     "normal" rate. Once at least MinBaselineSamples buckets have been
+//     folded in, that baseline is trusted for comparison - by default this
+//     takes 15 seconds, not the 2 minutes-plus a first version of this
+//     detector required.
+//  3. A "standard" spike is flagged once a real baseline exists and the
+//     current-window rate exceeds it by a configurable multiplier, gated
+//     by a minimum absolute event count (so a near-zero baseline can't be
+//     "exceeded" by a single stray event) and a per-pattern cooldown.
+//  4. A separate "bootstrap" path covers a pattern with NO baseline yet at
+//     all (brand new, or too young to have MinBaselineSamples) that is
+//     already firing at a severe, sustained rate: for severities at or
+//     above -severity-protect only, an assumed near-zero baseline is used
+//     so a severe error class occurring for the first time ever, at high
+//     volume, from the very first moment, is still surfaced - not silently
+//     absorbed while "warming up". This does not apply to ordinary
+//     severities, so a routine, merely-frequent INFO pattern occurring
+//     from the start of a session is never bootstrap-flagged.
 package pattern
 
 import (
@@ -29,13 +52,27 @@ import (
 // Config tunes anomaly sensitivity and store bounds. Zero-value Config is
 // invalid; use DefaultConfig().
 type Config struct {
-	BucketWidth        time.Duration
-	WindowBuckets      int
-	BaselineAlpha      float64
-	WarmupDuration     time.Duration
-	SpikeMultiplier    float64
-	MinWindowEvents    int
-	Cooldown           time.Duration
+	BucketWidth     time.Duration
+	WindowBuckets   int
+	BaselineAlpha   float64
+	SpikeMultiplier float64
+	MinWindowEvents int
+	Cooldown        time.Duration
+
+	// MinBaselineSamples is how many completed buckets must have been
+	// folded into the baseline before it is trusted for the standard
+	// (baseline-vs-current) comparison. This is a sample count, not a
+	// wall-clock duration, so it scales correctly with BucketWidth and
+	// unblocks detection as soon as enough real data exists rather than
+	// after an arbitrary fixed delay.
+	MinBaselineSamples int
+
+	// AssumedBaselinePerMin and MinBootstrapEvents configure the
+	// bootstrap path used only for severities at/above ProtectRank that
+	// have no trustworthy baseline yet. See package doc point 4.
+	AssumedBaselinePerMin float64
+	MinBootstrapEvents    int
+
 	MaxTrackedPatterns int
 
 	// ProtectRank and ProtectMultiplier give severities at/above ProtectRank
@@ -50,16 +87,18 @@ type Config struct {
 // zero-configuration use.
 func DefaultConfig() Config {
 	return Config{
-		BucketWidth:        5 * time.Second,
-		WindowBuckets:      12, // 60s current-rate window
-		BaselineAlpha:      0.05,
-		WarmupDuration:     2 * time.Minute,
-		SpikeMultiplier:    8.0,
-		MinWindowEvents:    5,
-		Cooldown:           60 * time.Second,
-		MaxTrackedPatterns: 10000,
-		ProtectRank:        int(severity.Error),
-		ProtectMultiplier:  3.0,
+		BucketWidth:           5 * time.Second,
+		WindowBuckets:         3, // 15s current-rate window - see package doc point 2
+		BaselineAlpha:         0.05,
+		SpikeMultiplier:       8.0,
+		MinWindowEvents:       5,
+		Cooldown:              60 * time.Second,
+		MinBaselineSamples:    3, // ~15s of real history before trusting baseline
+		AssumedBaselinePerMin: 1.0,
+		MinBootstrapEvents:    10,
+		MaxTrackedPatterns:    10000,
+		ProtectRank:           int(severity.Error),
+		ProtectMultiplier:     3.0,
 	}
 }
 
@@ -67,6 +106,12 @@ func DefaultConfig() Config {
 type Spike struct {
 	BaselinePerMin float64
 	CurrentPerMin  float64
+	// Bootstrap is true when no real learned baseline existed yet and
+	// BaselinePerMin is the configured assumed value, not data observed
+	// from this pattern's own history. The renderer labels these
+	// differently so the distinction is never presented as more certain
+	// than it is.
+	Bootstrap bool
 }
 
 // State is the tracked history of one structural pattern.
@@ -80,13 +125,13 @@ type State struct {
 	FirstSeen  time.Time
 	LastSeen   time.Time
 
-	cfg         Config
-	buckets     []uint32
-	bucketIdx   int
-	bucketStart time.Time
-	baseline    float64
-	warm        bool
-	lastAlert   time.Time
+	cfg             Config
+	buckets         []uint32
+	bucketIdx       int
+	bucketStart     time.Time
+	baseline        float64
+	baselineSamples int
+	lastAlert       time.Time
 
 	elem *list.Element // back-reference into Store's LRU list
 }
@@ -114,34 +159,46 @@ func (s *State) Record(now time.Time) *Spike {
 	s.TotalCount++
 	s.LastSeen = now
 
-	if !s.warm && now.Sub(s.FirstSeen) >= s.cfg.WarmupDuration {
-		s.warm = true
-	}
-	if !s.warm {
-		return nil
-	}
-
-	current := s.currentRatePerMin()
 	windowEvents := s.windowEventCount()
-	if s.baseline <= 0 || windowEvents < s.cfg.MinWindowEvents {
-		return nil
-	}
-	multiplier := s.cfg.SpikeMultiplier
-	if s.Severity.Rank() >= s.cfg.ProtectRank {
-		multiplier = s.cfg.ProtectMultiplier
-	}
-	if current < s.baseline*multiplier {
+	if windowEvents < s.cfg.MinWindowEvents {
 		return nil
 	}
 	if now.Sub(s.lastAlert) < s.cfg.Cooldown {
 		return nil
 	}
+
+	protected := s.Severity.Rank() >= s.cfg.ProtectRank
+	multiplier := s.cfg.SpikeMultiplier
+	if protected {
+		multiplier = s.cfg.ProtectMultiplier
+	}
+	current := s.currentRatePerMin()
+
+	if s.baselineSamples >= s.cfg.MinBaselineSamples && s.baseline > 0 {
+		if current < s.baseline*multiplier {
+			return nil
+		}
+		s.lastAlert = now
+		return &Spike{BaselinePerMin: s.baseline, CurrentPerMin: current}
+	}
+
+	// No trustworthy learned baseline yet: only bootstrap for protected
+	// severities, and only once a real sustained volume has been seen
+	// (not merely MinWindowEvents), so an ordinary "a new error type
+	// showed up a few times" does not get elevated to a spike banner.
+	if !protected || windowEvents < s.cfg.MinBootstrapEvents {
+		return nil
+	}
+	if current < s.cfg.AssumedBaselinePerMin*multiplier {
+		return nil
+	}
 	s.lastAlert = now
-	return &Spike{BaselinePerMin: s.baseline, CurrentPerMin: current}
+	return &Spike{BaselinePerMin: s.cfg.AssumedBaselinePerMin, CurrentPerMin: current, Bootstrap: true}
 }
 
-// advance rotates the ring buffer forward to `now`, folding any buckets
-// that fall out of the current window into the slow baseline EWMA.
+// advance rotates the ring buffer forward to `now`, folding each bucket
+// that finishes accumulating into the slow baseline EWMA - starting from
+// the very first bucket, not only once a full window has cycled.
 func (s *State) advance(now time.Time) {
 	elapsed := now.Sub(s.bucketStart)
 	n := int(elapsed / s.cfg.BucketWidth)
@@ -153,8 +210,8 @@ func (s *State) advance(now time.Time) {
 		steps = len(s.buckets)
 	}
 	for i := 0; i < steps; i++ {
-		retiring := s.buckets[s.bucketIdx]
-		rate := float64(retiring) / s.cfg.BucketWidth.Minutes()
+		completed := s.buckets[s.bucketIdx]
+		rate := float64(completed) / s.cfg.BucketWidth.Minutes()
 		s.updateBaseline(rate)
 		s.bucketIdx = (s.bucketIdx + 1) % len(s.buckets)
 		s.buckets[s.bucketIdx] = 0
@@ -163,11 +220,12 @@ func (s *State) advance(now time.Time) {
 }
 
 func (s *State) updateBaseline(observedRate float64) {
-	if s.baseline == 0 {
+	if s.baselineSamples == 0 {
 		s.baseline = observedRate
-		return
+	} else {
+		s.baseline = s.cfg.BaselineAlpha*observedRate + (1-s.cfg.BaselineAlpha)*s.baseline
 	}
-	s.baseline = s.cfg.BaselineAlpha*observedRate + (1-s.cfg.BaselineAlpha)*s.baseline
+	s.baselineSamples++
 }
 
 func (s *State) currentRatePerMin() float64 {

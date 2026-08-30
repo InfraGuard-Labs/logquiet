@@ -43,8 +43,8 @@ without ever having to share the underlying log content to make that case.
 | `suppressed_events` | integer | Occurrences collapsed into repeat counters |
 | `suppression_percentage` | number | `100 * suppressed / (suppressed + displayed)` |
 | `structural_patterns` | integer | Distinct structural fingerprints tracked at report time |
-| `warning_events` | integer | Occurrences at WARN severity |
-| `error_events` | integer | Occurrences at ERROR severity or above |
+| `warning_events` | integer | Occurrences **observed** at WARN severity in the input - every occurrence counts once, whether it was shown individually or collapsed into a suppressed repeat counter. Not a count of individually-displayed WARN lines. |
+| `error_events` | integer | Occurrences **observed** at ERROR severity or above in the input, with the same "observed, not necessarily individually displayed" meaning as `warning_events`. |
 | `anomaly_events` | integer | Frequency-spike banners raised |
 | `processing_rate_lines_per_second` | number | `raw_lines / session_duration_seconds` |
 

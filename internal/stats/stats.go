@@ -19,11 +19,20 @@ type Counters struct {
 	InputLines       uint64
 	DisplayedEvents  uint64
 	SuppressedEvents uint64
-	WarningEvents    uint64
-	ErrorEvents      uint64
-	AnomalyEvents    uint64
-	BytesRead        uint64
-	TruncatedLines   uint64
+
+	// WarningEvents and ErrorEvents count every WARN and ERROR-or-above
+	// occurrence *observed* in the input, incremented once per occurrence
+	// regardless of whether that particular occurrence was shown in full
+	// or collapsed into a suppressed repeat counter. They are NOT a count
+	// of individually-displayed lines - see DisplayedEvents/
+	// SuppressedEvents for that distinction. Named "observed" rather than
+	// "surfaced" or "displayed" for exactly this reason.
+	WarningEvents uint64
+	ErrorEvents   uint64
+
+	AnomalyEvents  uint64
+	BytesRead      uint64
+	TruncatedLines uint64
 }
 
 // New returns a Counters with Start set to now.
@@ -40,14 +49,17 @@ type Snapshot struct {
 	SuppressionPercent float64 `json:"suppression_percentage"`
 	StructuralPatterns int     `json:"structural_patterns"`
 	PatternsEvicted    uint64  `json:"patterns_evicted"`
-	WarningEvents      uint64  `json:"warning_events"`
-	ErrorEvents        uint64  `json:"error_events"`
-	AnomalyEvents      uint64  `json:"anomaly_events"`
-	TruncatedLines     uint64  `json:"truncated_lines"`
-	ElapsedSeconds     float64 `json:"elapsed_seconds"`
-	LinesPerSecond     float64 `json:"lines_per_second"`
-	MBPerSecond        float64 `json:"mb_per_second"`
-	ApproxMemoryMB     float64 `json:"approx_memory_mb"`
+	// WarningEvents and ErrorEvents: occurrences observed at that
+	// severity, not a count of individually-displayed lines - see the
+	// Counters doc comment and docs/IMPACT_REPORT.md.
+	WarningEvents  uint64  `json:"warning_events"`
+	ErrorEvents    uint64  `json:"error_events"`
+	AnomalyEvents  uint64  `json:"anomaly_events"`
+	TruncatedLines uint64  `json:"truncated_lines"`
+	ElapsedSeconds float64 `json:"elapsed_seconds"`
+	LinesPerSecond float64 `json:"lines_per_second"`
+	MBPerSecond    float64 `json:"mb_per_second"`
+	ApproxMemoryMB float64 `json:"approx_memory_mb"`
 }
 
 // Snapshot computes derived metrics as of now, given the current pattern
@@ -101,10 +113,13 @@ type ImpactReport struct {
 	SuppressedEvents      uint64  `json:"suppressed_events"`
 	SuppressionPercentage float64 `json:"suppression_percentage"`
 	StructuralPatterns    int     `json:"structural_patterns"`
-	WarningEvents         uint64  `json:"warning_events"`
-	ErrorEvents           uint64  `json:"error_events"`
-	AnomalyEvents         uint64  `json:"anomaly_events"`
-	ProcessingRateLPS     float64 `json:"processing_rate_lines_per_second"`
+	// WarningEvents and ErrorEvents: occurrences observed at that
+	// severity in the input, whether or not each one was individually
+	// displayed - see docs/IMPACT_REPORT.md.
+	WarningEvents     uint64  `json:"warning_events"`
+	ErrorEvents       uint64  `json:"error_events"`
+	AnomalyEvents     uint64  `json:"anomaly_events"`
+	ProcessingRateLPS float64 `json:"processing_rate_lines_per_second"`
 }
 
 // BuildImpactReport constructs the report from a snapshot. version is the

@@ -11,6 +11,46 @@ import (
 	"github.com/azimsiddiqui/logquiet/internal/severity"
 )
 
+// TestInteractiveTTYModeUsesColor exercises the actual interactive-
+// terminal rendering path (IsTTY=true, not Plain/NoColor/JSON), which
+// otherwise has no automated coverage - the CLI's own TTY detection can't
+// be exercised from a non-interactive test runner, but the rendering
+// logic it feeds into can and should be.
+func TestInteractiveTTYModeUsesColor(t *testing.T) {
+	var buf bytes.Buffer
+	opts := DefaultOptions()
+	opts.IsTTY = true // as if os.Stdout were a real terminal
+	r := New(&buf, opts)
+
+	r.Emit(Event{Fingerprint: 1, Severity: severity.Error, Template: "boom", RawLines: []string{"boom"}, IsNew: true})
+	r.Finalize(time.Unix(0, 0))
+
+	out := buf.String()
+	if !strings.Contains(out, "\x1b[") {
+		t.Fatalf("expected interactive TTY mode to include ANSI color codes, got %q", out)
+	}
+	if !strings.Contains(out, "\x1b[0m") {
+		t.Fatalf("expected a reset code after the colored segment, got %q", out)
+	}
+}
+
+// TestNoColorModeSuppressesColorEvenOnTTY ensures --no-color overrides TTY
+// detection: color is opt-out even when attached to a real terminal.
+func TestNoColorModeSuppressesColorEvenOnTTY(t *testing.T) {
+	var buf bytes.Buffer
+	opts := DefaultOptions()
+	opts.IsTTY = true
+	opts.NoColor = true
+	r := New(&buf, opts)
+
+	r.Emit(Event{Fingerprint: 1, Severity: severity.Critical, Template: "boom", RawLines: []string{"boom"}, IsNew: true})
+	r.Finalize(time.Unix(0, 0))
+
+	if strings.Contains(buf.String(), "\x1b[") {
+		t.Fatalf("--no-color must suppress ANSI codes even when IsTTY is true, got %q", buf.String())
+	}
+}
+
 func TestPlainModeNoANSI(t *testing.T) {
 	var buf bytes.Buffer
 	opts := DefaultOptions()
@@ -136,6 +176,33 @@ func TestAnomalyAlwaysShownEvenIfAccumulating(t *testing.T) {
 	}
 	if !strings.Contains(out, "0.1") || !strings.Contains(out, "280") {
 		t.Fatalf("expected baseline and current rate in banner, got %q", out)
+	}
+}
+
+// TestBootstrapAnomalyLabeledDistinctly ensures an assumed (not learned)
+// baseline is never presented as if it were measured from real history.
+func TestBootstrapAnomalyLabeledDistinctly(t *testing.T) {
+	var buf bytes.Buffer
+	opts := DefaultOptions()
+	opts.Plain = true
+	r := New(&buf, opts)
+
+	now := time.Unix(0, 0)
+	r.Emit(Event{Fingerprint: 1, Severity: severity.Error, Template: "db timeout", RawLines: []string{"db timeout"}, IsNew: true})
+	r.EmitAnomaly(Anomaly{Fingerprint: 1, Severity: severity.Error, Template: "db timeout", CurrentPerMin: 280, Bootstrap: true}, now)
+
+	out := buf.String()
+	if !strings.Contains(out, "FREQUENCY SPIKE") {
+		t.Fatalf("expected a frequency spike banner, got %q", out)
+	}
+	if strings.Contains(out, "baseline:") {
+		t.Fatalf("bootstrap anomaly must not present an assumed baseline as a measured one, got %q", out)
+	}
+	if !strings.Contains(out, "no prior history") {
+		t.Fatalf("expected the banner to say plainly that there is no prior history, got %q", out)
+	}
+	if !strings.Contains(out, "280") {
+		t.Fatalf("expected the current rate to still be shown, got %q", out)
 	}
 }
 

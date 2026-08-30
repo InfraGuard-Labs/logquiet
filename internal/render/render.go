@@ -80,6 +80,11 @@ type Anomaly struct {
 	RawLines       []string
 	BaselinePerMin float64
 	CurrentPerMin  float64
+	// Bootstrap is true when BaselinePerMin is an assumed value (no real
+	// history existed for this pattern yet), not one learned from its own
+	// observed behavior. Rendered with different wording so an assumed
+	// number is never presented as if it were measured.
+	Bootstrap bool
 }
 
 type pending struct {
@@ -175,6 +180,7 @@ type jsonLine struct {
 	New            bool     `json:"new,omitempty"`
 	BaselinePerMin float64  `json:"baseline_per_min,omitempty"`
 	CurrentPerMin  float64  `json:"current_per_min,omitempty"`
+	Bootstrap      bool     `json:"bootstrap,omitempty"`
 }
 
 func (r *Renderer) emitJSON(v jsonLine) {
@@ -323,19 +329,29 @@ func (r *Renderer) EmitAnomaly(a Anomaly, now time.Time) {
 			Lines:          a.RawLines,
 			BaselinePerMin: a.BaselinePerMin,
 			CurrentPerMin:  a.CurrentPerMin,
+			Bootstrap:      a.Bootstrap,
 		})
 		return
 	}
 
 	prefix, reset := r.color(severity.Critical)
-	_, _ = fmt.Fprintf(r.w, "%s\U0001F6A8 FREQUENCY SPIKE%s\n", prefix, reset)
 	summary := a.Template
 	if len(a.RawLines) > 0 {
 		summary = a.RawLines[0]
 	}
-	_, _ = fmt.Fprintf(r.w, "%s   %s%s\n", prefix, summary, reset)
-	_, _ = fmt.Fprintf(r.w, "%s   baseline: %s/min%s\n", prefix, rate(a.BaselinePerMin), reset)
-	_, _ = fmt.Fprintf(r.w, "%s   current:  %s/min%s\n", prefix, rate(a.CurrentPerMin), reset)
+	if a.Bootstrap {
+		// No real history exists for this pattern yet; BaselinePerMin is
+		// an assumed value, not something observed. Say so plainly rather
+		// than presenting it as a measured baseline.
+		_, _ = fmt.Fprintf(r.w, "%s\U0001F6A8 FREQUENCY SPIKE (new pattern)%s\n", prefix, reset)
+		_, _ = fmt.Fprintf(r.w, "%s   %s%s\n", prefix, summary, reset)
+		_, _ = fmt.Fprintf(r.w, "%s   no prior history - already occurring at %s/min%s\n", prefix, rate(a.CurrentPerMin), reset)
+	} else {
+		_, _ = fmt.Fprintf(r.w, "%s\U0001F6A8 FREQUENCY SPIKE%s\n", prefix, reset)
+		_, _ = fmt.Fprintf(r.w, "%s   %s%s\n", prefix, summary, reset)
+		_, _ = fmt.Fprintf(r.w, "%s   baseline: %s/min%s\n", prefix, rate(a.BaselinePerMin), reset)
+		_, _ = fmt.Fprintf(r.w, "%s   current:  %s/min%s\n", prefix, rate(a.CurrentPerMin), reset)
+	}
 	_, _ = fmt.Fprintln(r.w)
 }
 

@@ -1,0 +1,48 @@
+2026-08-30 09:00:00 [INFO] Connection pool active. 42 connections open.
+2026-08-30 09:00:01 [INFO] Connection pool active. 42 connections open.
+2026-08-30 09:00:02 [INFO] Connection pool active. 42 connections open.
+2026-08-30 09:00:03 [INFO] Connection pool active. 42 connections open.
+2026-08-30 09:00:04 [INFO] Connection pool active. 42 connections open.
+2026-08-30 09:00:05 [INFO] Connection pool active. 42 connections open.
+2026-08-30 09:00:06 [INFO] Connection pool active. 42 connections open.
+2026-08-30 09:00:07 [INFO] Connection pool active. 42 connections open.
+2026-08-30 09:00:08 [INFO] Connection pool active. 42 connections open.
+2026-08-30 09:00:09 [INFO] Connection pool active. 42 connections open.
+2026-08-30 09:00:10 [INFO] Connection pool active. 42 connections open.
+2026-08-30 09:00:11 [INFO] Connection pool active. 42 connections open.
+2026-08-30 09:00:12 [INFO] User 48213 requested page /dashboard
+2026-08-30 09:00:13 [INFO] Connection pool active. 42 connections open.
+2026-08-30 09:00:14 [INFO] Connection pool active. 42 connections open.
+2026-08-30 09:00:15 [INFO] Connection pool active. 42 connections open.
+2026-08-30 09:00:16 [INFO] Connection pool active. 42 connections open.
+2026-08-30 09:00:17 [INFO] Connection pool active. 42 connections open.
+2026-08-30 09:00:18 [INFO] Connection pool active. 42 connections open.
+2026-08-30 09:00:19 [INFO] Connection pool active. 42 connections open.
+2026-08-30 09:00:20 [INFO] Connection pool active. 42 connections open.
+2026-08-30 09:00:21 [INFO] Health check ok: /healthz 200 3ms
+2026-08-30 09:00:22 [INFO] Connection pool active. 42 connections open.
+2026-08-30 09:00:23 [INFO] Connection pool active. 42 connections open.
+2026-08-30 09:00:24 [INFO] Connection pool active. 42 connections open.
+2026-08-30 09:00:25 [INFO] Connection pool active. 42 connections open.
+2026-08-30 09:00:26 [INFO] Connection pool active. 42 connections open.
+2026-08-30 09:00:27 [INFO] Connection pool active. 42 connections open.
+2026-08-30 09:00:28 [CRITICAL] DATABASE TIMEOUT: Host 10.0.1.45 failed to respond in 5000ms.
+2026-08-30 09:00:29 [ERROR] Traceback (most recent call last):
+  File "/app/db.py", line 42, in execute_query
+    raise TimeoutError("DB connection lost")
+TimeoutError: DB connection lost
+2026-08-30 09:00:30 [WARNING] Retrying connection attempt 1...
+2026-08-30 09:00:31 [WARNING] Retrying connection attempt 2...
+2026-08-30 09:00:32 [WARNING] Retrying connection attempt 3...
+2026-08-30 09:00:33 [WARNING] Retrying connection attempt 4...
+2026-08-30 09:00:34 [INFO] Connection pool recovered. 41 connections open.
+2026-08-30 09:00:35 [INFO] Connection pool active. 41 connections open.
+2026-08-30 09:00:36 [INFO] Connection pool active. 41 connections open.
+2026-08-30 09:00:37 [INFO] Connection pool active. 41 connections open.
+2026-08-30 09:00:38 [INFO] Connection pool active. 41 connections open.
+2026-08-30 09:00:39 [INFO] Connection pool active. 41 connections open.
+2026-08-30 09:00:40 [INFO] Connection pool active. 41 connections open.
+2026-08-30 09:00:41 [INFO] Connection pool active. 41 connections open.
+2026-08-30 09:00:42 [INFO] Connection pool active. 41 connections open.
+2026-08-30 09:00:43 [INFO] Connection pool active. 41 connections open.
+2026-08-30 09:00:44 [INFO] Connection pool active. 41 connections open.

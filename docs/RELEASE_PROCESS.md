@@ -86,3 +86,24 @@ curl -LO https://github.com/<owner>/logquiet/releases/download/vX.Y.Z/SHA256SUMS
 curl -LO https://github.com/<owner>/logquiet/releases/download/vX.Y.Z/logquiet-vX.Y.Z-linux-amd64
 sha256sum -c SHA256SUMS.txt --ignore-missing
 ```
+
+This works because both files land in the same directory (wherever you
+ran `curl` from) - `sha256sum -c` resolves the filenames it lists relative
+to your *current directory*, not relative to the checksums file's own
+location. That distinction matters the moment the two aren't in the same
+place: for example, if you build locally with `scripts/build-release.sh`
+(which writes into `dist/`) and then try to verify from one level above
+with `sha256sum -c dist/SHA256SUMS.txt`, every single entry fails with
+"No such file or directory" - not because anything is wrong with the
+files, but because `sha256sum` is looking for `./logquiet-...` next to
+your shell, not inside `dist/`. This is a real, reproducible gotcha with
+`sha256sum -c` itself, not specific to this project, but it is exactly
+the kind of thing that makes a release feel broken when it isn't.
+
+To sidestep it entirely, use the wrapper this repository provides, which
+works correctly no matter which directory you run it from:
+
+```bash
+scripts/verify-release.sh dist                  # a local build directory
+scripts/verify-release.sh path/to/SHA256SUMS.txt
+```
