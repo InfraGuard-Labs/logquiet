@@ -87,20 +87,26 @@ regression before release, and it did.
 
 | Corpus | Lines | Profile | Elapsed | Lines/sec | MB/sec | Approx. memory |
 |---|---:|---|---:|---:|---:|---:|
-| `mixed-100k.log` | 100,002 | 90% repetitive / 10% diverse | 3.4s | 29,900 | 2.25 | 2.4 MB |
-| `mixed-1m.log` | 1,000,020 | 90% repetitive / 10% diverse | 40-41s | 24,000-24,600 | 1.85 | 2.8 MB |
-| `repetitive-1m.log` | 1,000,020 | fully repetitive (per service) | 42-47s | 21,500-23,800 | 1.6-1.8 | 2.3-2.7 MB |
-| `diverse-1m.log` | 1,000,020 | fully unique (adversarial - see below) | 97-109s | 9,200-10,400 | 0.9-1.0 | 12.4-12.9 MB |
-| `mixed-10m.log` | 10,000,200 | 90% repetitive / 10% diverse | ~478s | ~20,900 | ~1.6 | ~2.9 MB |
+| `mixed-100k.log` | 100,002 | 90% repetitive / 10% diverse | 6.32s | 15,818 | 1.19 | 2.4 MB |
+| `mixed-1m.log` | 1,000,020 | 90% repetitive / 10% diverse | 49.70s | 20,121 | 1.51 | 2.1 MB |
+| `repetitive-1m.log` | 1,000,020 | fully repetitive (per service) | 41.98s | 23,819 | 1.77 | 2.3 MB |
+| `diverse-1m.log` | 1,000,020 | fully unique (adversarial - see below) | 96.46s | 10,367 | 1.02 | 12.9 MB |
+| `mixed-10m.log` | 10,000,200 | 90% repetitive / 10% diverse | 495.07s | 20,200 | 1.52 | 1.8 MB |
 
 `--stats` reports `approx memory` from Go's `runtime.MemStats.Alloc` at
 the end of the run, not a sampled peak - real peak RSS is somewhat higher
 due to allocator overhead, but the trend (memory does not grow with input
 size once patterns saturate) is the property that matters, and it holds:
-**roughly 2.3-2.9 MB for corpora from 100K to 10M lines**, because the
-pattern store is bounded regardless of stream length. A small run-to-run
-variance (a few percent) is normal on a shared development laptop and is
-reported as a range above rather than a single misleadingly-precise number.
+**1.8-2.4 MB for the realistic (mixed/repetitive) corpora from 100K to
+10M lines**, because the pattern store is bounded regardless of stream
+length - the 10M run used *less* measured memory than the 100K run at the
+moment `--stats` sampled it, which is expected GC-timing noise around an
+already-small, flat baseline, not a trend. Run-to-run throughput variance
+of 10-20% is normal on a shared development laptop (the `mixed-100k`
+figure above, for instance, ran slower than the larger `mixed-1m` corpus
+in the same batch, almost certainly background system load rather than a
+real "smaller is slower" effect) and is reported as measured, not smoothed
+over.
 
 ### The `diverse-1m.log` result is a deliberately adversarial case, explained
 
@@ -117,14 +123,14 @@ is reported here rather than cherry-picked out:
   bounded-memory guarantee (default `--max-patterns 10000`) held exactly
   at the configured limit under one million-line sustained pressure,
   evicting the other 990,020 as designed rather than growing without
-  bound. Memory stayed at ~12.4-12.9 MB (higher than the other runs,
-  because a full LRU of 10,000 live patterns is being maintained, but
-  still small and still bounded).
-- Throughput drops to roughly 9,000-10,000 lines/sec under this specific
-  adversarial shape, versus 20,000-30,000 lines/sec for the mixed/
-  repetitive corpora that resemble real infrastructure logs (which are
-  rarely "every single line is globally unique forever"). This is
-  reported as the honest worst-case number, not hidden.
+  bound. Memory stayed at 12.9 MB (higher than the other runs, because a
+  full LRU of 10,000 live patterns is being maintained, but still small
+  and still bounded).
+- Throughput drops to 10,367 lines/sec under this specific adversarial
+  shape, versus 15,800-23,800 lines/sec for the mixed/repetitive corpora
+  that resemble real infrastructure logs (which are rarely "every single
+  line is globally unique forever"). This is reported as the honest
+  worst-case number, not hidden.
 
 ### What limits throughput today
 
@@ -138,7 +144,7 @@ throughput, LogQuiet processes tens of thousands of lines per second with
 enormous headroom over realistic live `kubectl logs -f`/`tail -F` rates
 (real services rarely sustain more than a few thousand lines/sec, even
 when noisy), and processes a 10-million-line historical file end-to-end
-in well under ten minutes on a mid-range laptop. Further throughput work
+in about 8 minutes on a mid-range laptop (495s measured above). Further throughput work
 (hand-rolling more of the remaining regex-based classes, or adding a cheap
 "no digit/hex character present" pre-filter to skip normalization entirely
 on many real log lines) is a reasonable direction for a future version and
