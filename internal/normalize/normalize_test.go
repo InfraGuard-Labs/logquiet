@@ -20,6 +20,15 @@ func TestTemplateCollapsesVariables(t *testing.T) {
 			"User [NUM] connected from [IP]",
 		},
 		{
+			// Apache/nginx combined log format. Without a dedicated rule,
+			// the "HH:MM:SS" portion looks exactly like a colon-separated
+			// IPv6 address and gets misclassified - found via manual
+			// testing against a real nginx access log fixture.
+			"apache-combined-log-timestamp",
+			`192.168.1.10 - - [30/Aug/2026:03:01:00 +0000] "GET /x HTTP/1.1" 200 15`,
+			`[IP] - - [TIMESTAMP] "GET /x HTTP/[NUM]" [NUM] [NUM]`,
+		},
+		{
 			"uuid",
 			"request 550e8400-e29b-41d4-a716-446655440000 completed",
 			"request [UUID] completed",

@@ -46,6 +46,10 @@ var regexClasses = []struct {
 	repl    string
 }{
 	{"iso8601", `\b\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}:\d{2}(?:\.\d{1,9})?(?:Z|[+-]\d{2}:?\d{2})?\b`, "[TIMESTAMP]"},
+	// Apache/nginx combined log format, e.g. [30/Aug/2026:03:01:00 +0000].
+	// Listed before ipv6 so its "HH:MM:SS" portion is never misread as an
+	// IPv6 address (both are colon-separated hex-looking groups).
+	{"apachetime", `\[\d{1,2}/(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)/\d{4}:\d{2}:\d{2}:\d{2} [+-]\d{4}\]`, "[TIMESTAMP]"},
 	{"date", `\b\d{4}-\d{2}-\d{2}\b`, "[DATE]"},
 	{"dateslash", `\b\d{1,4}/\d{1,2}/\d{1,4}\b`, "[DATE]"},
 	{"clock", `\b\d{1,2}:\d{2}:\d{2}(?:\.\d{1,9})?\b`, "[TIME]"},
