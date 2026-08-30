@@ -10,8 +10,8 @@
     "known_important_total": 1,
     "known_important_retained": 1,
     "missed": null,
-    "throughput_lines_per_second": 9946.817920880374,
-    "elapsed_seconds": 0.0553946
+    "throughput_lines_per_second": 27277.90291838907,
+    "elapsed_seconds": 0.0201995
   },
   {
     "scenario": "ci-deployment-failure",
@@ -24,8 +24,8 @@
     "known_important_total": 2,
     "known_important_retained": 2,
     "missed": null,
-    "throughput_lines_per_second": 7097.280051911534,
-    "elapsed_seconds": 0.0147944
+    "throughput_lines_per_second": 39472.200293222064,
+    "elapsed_seconds": 0.0026601
   },
   {
     "scenario": "database-connection-exhaustion",
@@ -38,8 +38,8 @@
     "known_important_total": 2,
     "known_important_retained": 2,
     "missed": null,
-    "throughput_lines_per_second": 14227.39343175706,
-    "elapsed_seconds": 0.0236867
+    "throughput_lines_per_second": 40461.03974066515,
+    "elapsed_seconds": 0.008329
   },
   {
     "scenario": "go-panic",
@@ -52,8 +52,8 @@
     "known_important_total": 1,
     "known_important_retained": 1,
     "missed": null,
-    "throughput_lines_per_second": 10602.335586969883,
-    "elapsed_seconds": 0.013016
+    "throughput_lines_per_second": 46929.19812283208,
+    "elapsed_seconds": 0.0029406
   },
   {
     "scenario": "healthy-noisy-service-then-fatal",
@@ -66,8 +66,8 @@
     "known_important_total": 1,
     "known_important_retained": 1,
     "missed": null,
-    "throughput_lines_per_second": 18428.740361980617,
-    "elapsed_seconds": 0.1085804
+    "throughput_lines_per_second": 42329.04965889259,
+    "elapsed_seconds": 0.0472725
   },
   {
     "scenario": "http-service-failure",
@@ -80,8 +80,8 @@
     "known_important_total": 1,
     "known_important_retained": 1,
     "missed": null,
-    "throughput_lines_per_second": 5891.3192936749165,
-    "elapsed_seconds": 0.0884352
+    "throughput_lines_per_second": 15760.274428425364,
+    "elapsed_seconds": 0.0330578
   },
   {
     "scenario": "java-exception",
@@ -94,8 +94,8 @@
     "known_important_total": 2,
     "known_important_retained": 2,
     "missed": null,
-    "throughput_lines_per_second": 8408.0419195879,
-    "elapsed_seconds": 0.0281873
+    "throughput_lines_per_second": 16481.109310783653,
+    "elapsed_seconds": 0.0143801
   },
   {
     "scenario": "kubernetes-pod-restart-loop",
@@ -108,8 +108,8 @@
     "known_important_total": 2,
     "known_important_retained": 2,
     "missed": null,
-    "throughput_lines_per_second": 8723.13424115526,
-    "elapsed_seconds": 0.0367987
+    "throughput_lines_per_second": 21998.053754745688,
+    "elapsed_seconds": 0.0145922
   },
   {
     "scenario": "nodejs-exception",
@@ -122,8 +122,8 @@
     "known_important_total": 1,
     "known_important_retained": 1,
     "missed": null,
-    "throughput_lines_per_second": 9322.172354473201,
-    "elapsed_seconds": 0.0208106
+    "throughput_lines_per_second": 12703.9008833795,
+    "elapsed_seconds": 0.0152709
   },
   {
     "scenario": "python-traceback",
@@ -136,7 +136,7 @@
     "known_important_total": 1,
     "known_important_retained": 1,
     "missed": null,
-    "throughput_lines_per_second": 11851.565192678634,
-    "elapsed_seconds": 0.0165379
+    "throughput_lines_per_second": 40655.46567102261,
+    "elapsed_seconds": 0.004821
   }
 ]
