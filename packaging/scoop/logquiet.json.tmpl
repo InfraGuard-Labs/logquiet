@@ -1,0 +1,24 @@
+{
+  "_comment": "TEMPLATE, not a published manifest. Publishing requires either hosting your own Scoop bucket (a GitHub repo) or submitting to an existing one - a real account/repository decision, not made automatically. Fill in REPLACE_ placeholders after cutting a real release and computing the checksum from SHA256SUMS.txt. Usage once published: scoop bucket add logquiet <repo-url>; scoop install logquiet",
+  "version": "REPLACE_WITH_VERSION",
+  "description": "Make noisy live logs readable: local, zero-config structural log compaction",
+  "homepage": "https://github.com/azimsiddiqui/logquiet",
+  "license": "Apache-2.0",
+  "architecture": {
+    "64bit": {
+      "url": "https://github.com/azimsiddiqui/logquiet/releases/download/vREPLACE_WITH_VERSION/logquiet-vREPLACE_WITH_VERSION-windows-amd64.exe",
+      "hash": "REPLACE_WITH_WINDOWS_AMD64_SHA256"
+    }
+  },
+  "bin": [["logquiet-vREPLACE_WITH_VERSION-windows-amd64.exe", "logquiet.exe"]],
+  "checkver": {
+    "github": "https://github.com/azimsiddiqui/logquiet"
+  },
+  "autoupdate": {
+    "architecture": {
+      "64bit": {
+        "url": "https://github.com/azimsiddiqui/logquiet/releases/download/v$version/logquiet-v$version-windows-amd64.exe"
+      }
+    }
+  }
+}

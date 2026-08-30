@@ -1,0 +1,50 @@
+# Homebrew formula template for LogQuiet.
+#
+# This is a TEMPLATE, not a published formula: publishing it requires
+# either creating a homebrew-logquiet tap (a GitHub repository under an
+# account/organization this automated process does not control) or
+# submitting to homebrew-core (which has its own acceptance criteria,
+# including a track record of usage this project does not yet have - see
+# docs/RELEASE_PROCESS.md). Fill in the placeholders below after cutting a
+# real release and computing the real checksums from SHA256SUMS.txt.
+#
+# Usage once published (from a tap):
+#   brew install <owner>/logquiet/logquiet
+
+class Logquiet < Formula
+  desc "Make noisy live logs readable: local, zero-config structural log compaction"
+  homepage "https://github.com/azimsiddiqui/logquiet"
+  version "REPLACE_WITH_VERSION" # e.g. 0.1.0 (no leading v)
+  license "Apache-2.0"
+
+  on_macos do
+    on_intel do
+      url "https://github.com/azimsiddiqui/logquiet/releases/download/vREPLACE_WITH_VERSION/logquiet-vREPLACE_WITH_VERSION-darwin-amd64"
+      sha256 "REPLACE_WITH_DARWIN_AMD64_SHA256"
+    end
+    on_arm do
+      url "https://github.com/azimsiddiqui/logquiet/releases/download/vREPLACE_WITH_VERSION/logquiet-vREPLACE_WITH_VERSION-darwin-arm64"
+      sha256 "REPLACE_WITH_DARWIN_ARM64_SHA256"
+    end
+  end
+
+  on_linux do
+    on_intel do
+      url "https://github.com/azimsiddiqui/logquiet/releases/download/vREPLACE_WITH_VERSION/logquiet-vREPLACE_WITH_VERSION-linux-amd64"
+      sha256 "REPLACE_WITH_LINUX_AMD64_SHA256"
+    end
+    on_arm do
+      url "https://github.com/azimsiddiqui/logquiet/releases/download/vREPLACE_WITH_VERSION/logquiet-vREPLACE_WITH_VERSION-linux-arm64"
+      sha256 "REPLACE_WITH_LINUX_ARM64_SHA256"
+    end
+  end
+
+  def install
+    bin.install Dir["logquiet-*"].first => "logquiet"
+  end
+
+  test do
+    assert_match "logquiet", shell_output("#{bin}/logquiet --version")
+    assert_match "INFO hello", pipe_output("#{bin}/logquiet --plain", "[INFO] hello\n")
+  end
+end
