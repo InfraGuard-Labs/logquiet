@@ -1,0 +1,15 @@
+2026-08-30 03:01:00 [INFO] Connection pool active. 42 connections open.
+2026-08-30 03:01:01 [INFO] Connection pool active. 42 connections open.
+2026-08-30 03:01:02 [INFO] Connection pool active. 42 connections open.
+2026-08-30 03:01:03 [INFO] Connection pool active. 42 connections open.
+2026-08-30 03:01:04 [INFO] Connection pool active. 42 connections open.
+2026-08-30 03:01:05 [INFO] User 10829 requested page /dashboard
+2026-08-30 03:01:06 [INFO] Connection pool active. 42 connections open.
+2026-08-30 03:01:07 [CRITICAL] DATABASE TIMEOUT: Host 10.0.1.45 failed to respond in 5000ms.
+2026-08-30 03:01:07 [ERROR] Traceback (most recent call last):
+2026-08-30 03:01:07 [ERROR]   File "/app/db.py", line 42, in execute_query
+2026-08-30 03:01:07 [ERROR]     raise TimeoutError("DB connection lost")
+2026-08-30 03:01:07 [ERROR] TimeoutError: DB connection lost
+2026-08-30 03:01:08 [WARNING] Retrying connection attempt 1...
+2026-08-30 03:01:09 [WARNING] Retrying connection attempt 2...
+2026-08-30 03:01:10 [WARNING] Retrying connection attempt 3...

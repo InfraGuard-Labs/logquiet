@@ -1,0 +1,6 @@
+/logquiet.exe
+/logquiet
+/dist/
+*.test
+*.prof
+.DS_Store
