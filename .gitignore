@@ -1,6 +1,16 @@
 /logquiet.exe
 /logquiet
+/fixturegen.exe
+/fixturegen
+/diag.exe
 /dist/
 *.test
 *.prof
 .DS_Store
+
+# Large generated benchmark corpora - reproducible via:
+#   go run ./tools/fixturegen perf <lines> <profile> <outfile>
+# Correctness fixtures (fixtures/synthetic/*.log) are small and ARE
+# committed; only the large raw-throughput corpora are excluded.
+/benchmarks/data/
+/benchmarks/results/run.log

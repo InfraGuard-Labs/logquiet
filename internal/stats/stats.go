@@ -6,6 +6,7 @@ package stats
 
 import (
 	"encoding/json"
+	"math"
 	"runtime"
 	"time"
 )
@@ -69,18 +70,22 @@ func (c *Counters) Snapshot(now time.Time, patternCount int, patternsEvicted uin
 		InputLines:         c.InputLines,
 		DisplayedEvents:    c.DisplayedEvents,
 		SuppressedEvents:   c.SuppressedEvents,
-		SuppressionPercent: suppressionPct,
+		SuppressionPercent: round2(suppressionPct),
 		StructuralPatterns: patternCount,
 		PatternsEvicted:    patternsEvicted,
 		WarningEvents:      c.WarningEvents,
 		ErrorEvents:        c.ErrorEvents,
 		AnomalyEvents:      c.AnomalyEvents,
 		TruncatedLines:     c.TruncatedLines,
-		ElapsedSeconds:     elapsed,
-		LinesPerSecond:     float64(c.InputLines) / elapsed,
-		MBPerSecond:        (float64(c.BytesRead) / (1024 * 1024)) / elapsed,
-		ApproxMemoryMB:     float64(mem.Alloc) / (1024 * 1024),
+		ElapsedSeconds:     round2(elapsed),
+		LinesPerSecond:     round2(float64(c.InputLines) / elapsed),
+		MBPerSecond:        round2((float64(c.BytesRead) / (1024 * 1024)) / elapsed),
+		ApproxMemoryMB:     round2(float64(mem.Alloc) / (1024 * 1024)),
 	}
+}
+
+func round2(v float64) float64 {
+	return math.Round(v*100) / 100
 }
 
 // ImpactReport is the stable, documented schema written by --impact-report.

@@ -71,6 +71,21 @@ func writeManifest(path string, m manifest) {
 	os.WriteFile(path, b, 0o644)
 }
 
+// letterize converts a non-negative int into a unique pure-alphabetic
+// string (base-26, A-Z), used so a per-line "unique" marker isn't itself
+// erased by [NUM] normalization.
+func letterize(i int) string {
+	if i == 0 {
+		return "a"
+	}
+	var b []byte
+	for i > 0 {
+		b = append([]byte{byte('a' + i%26)}, b...)
+		i /= 26
+	}
+	return string(b)
+}
+
 func ts(sec int) string {
 	h := 3 + sec/3600
 	m := (sec / 60) % 60
@@ -413,9 +428,18 @@ func genPerf(n int, profile, outfile string) {
 		}
 		if repetitive {
 			fmt.Fprintf(w, "%s [INFO] %s: connection pool active, %d connections open\n", ts(sec), services[i%len(services)], 40+i%5)
+		} else if profile == "diverse" {
+			// A per-line unique alphabetic operation tag (letterized index,
+			// so it is NOT erased by [NUM] normalization) gives genuinely
+			// unbounded structural cardinality, exercising both real
+			// diversity and LRU eviction at scale - unlike varying only
+			// numeric payloads, which normalization intentionally collapses.
+			fmt.Fprintf(w, "%s [INFO] %s: %s operation-%s id=%d dur=%dms addr=10.%d.%d.%d\n",
+				ts(sec), services[rng.Intn(len(services))], verbs[rng.Intn(len(verbs))], letterize(i),
+				rng.Intn(1_000_000), rng.Intn(500), rng.Intn(256), rng.Intn(256), rng.Intn(256))
 		} else {
 			fmt.Fprintf(w, "%s [INFO] %s: %s id=%d dur=%dms addr=10.%d.%d.%d\n",
-				ts(sec), services[i%len(services)], verbs[i%len(verbs)], rng.Intn(1_000_000), rng.Intn(500),
+				ts(sec), services[rng.Intn(len(services))], verbs[rng.Intn(len(verbs))], rng.Intn(1_000_000), rng.Intn(500),
 				rng.Intn(256), rng.Intn(256), rng.Intn(256))
 		}
 		if i%50000 == 49999 {
