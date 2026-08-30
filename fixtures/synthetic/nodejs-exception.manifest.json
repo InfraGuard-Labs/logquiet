@@ -1,0 +1,9 @@
+{
+  "scenario": "nodejs-exception",
+  "synthetic": true,
+  "total_lines": 194,
+  "known_important_substrings": [
+    "Unhandled promise rejection: TypeError"
+  ],
+  "description": "An Express request log with one unhandled promise rejection stack trace."
+}

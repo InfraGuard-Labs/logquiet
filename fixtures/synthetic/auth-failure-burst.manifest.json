@@ -1,0 +1,9 @@
+{
+  "scenario": "authentication-failure-burst",
+  "synthetic": true,
+  "total_lines": 551,
+  "known_important_substrings": [
+    "account admin locked after 500 failed login attempts"
+  ],
+  "description": "Normal logins followed by a rapid brute-force-style authentication failure burst and an account lockout."
+}

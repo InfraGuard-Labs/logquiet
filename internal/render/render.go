@@ -1,16 +1,26 @@
 // Package render turns pipeline decisions into terminal output. It supports
 // four output modes:
 //
-//   - TTY (default, stdout is a terminal): colorized, with the repeat
-//     counter for an in-progress streak updated in place using ANSI cursor
-//     movement instead of reprinting a line per occurrence.
+//   - TTY (default, stdout is a terminal): colorized text.
 //   - Plain (--plain, or automatically when stdout is not a terminal):
-//     no cursor movement or color; the repeat counter is flushed
-//     periodically and when a streak ends, never mid-line.
+//     no color.
 //   - No-color (--no-color): like TTY but without SGR color codes.
-//   - JSON (--json): one NDJSON object per decision, sharing the same
-//     event/repeat/anomaly model so downstream tools see a bounded,
-//     structured stream rather than one line per raw input line.
+//   - JSON (--json): one NDJSON object per decision.
+//
+// Repeat handling: a brand-new structural pattern is always shown in full,
+// immediately, with its real values. Every later occurrence of that same
+// pattern - whether or not other, different patterns are interleaved in
+// between, which is the normal case for real logs (a restart loop cycling
+// through several distinct messages, or several services' output merged
+// together) - is accumulated into a per-pattern counter and flushed as a
+// compact summary line on a short, bounded cadence, rather than either
+// reprinting the full line every time or waiting for that exact pattern to
+// repeat back-to-back. This is a deliberate simplification versus
+// cursor-repositioning "redraw the same terminal line in place" tricks:
+// periodic summarization is simple to reason about, is correct across
+// terminal multiplexers/resizing, and generalizes to many concurrently
+// recurring patterns, at the cost of a small bounded delay before a count
+// visibly updates. See docs/ARCHITECTURE.md.
 package render
 
 import (
@@ -18,12 +28,91 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"sort"
 	"syscall"
 	"time"
 
 	"github.com/azimsiddiqui/logquiet/internal/fingerprint"
 	"github.com/azimsiddiqui/logquiet/internal/severity"
 )
+
+// Options configures a Renderer.
+type Options struct {
+	IsTTY   bool
+	Plain   bool
+	NoColor bool
+	JSON    bool
+
+	// FlushInterval is how often an accumulating pattern's counter is
+	// flushed as a summary line.
+	FlushInterval time.Duration
+	// ProtectedFlushInterval is used instead of FlushInterval for
+	// severities at/above ProtectRank, so important classes of event
+	// surface their running counts sooner.
+	ProtectedFlushInterval time.Duration
+	ProtectRank            int
+}
+
+// DefaultOptions returns sensible defaults; callers override IsTTY/Plain/
+// NoColor/JSON based on flags and terminal detection.
+func DefaultOptions() Options {
+	return Options{
+		FlushInterval:          2 * time.Second,
+		ProtectedFlushInterval: 500 * time.Millisecond,
+		ProtectRank:            int(severity.Error),
+	}
+}
+
+// Event carries everything a renderer needs to display a brand-new pattern.
+type Event struct {
+	Fingerprint fingerprint.ID
+	Severity    severity.Level
+	Template    string
+	RawLines    []string
+	IsNew       bool
+}
+
+// Anomaly carries the data needed to render a frequency-spike banner.
+type Anomaly struct {
+	Fingerprint    fingerprint.ID
+	Severity       severity.Level
+	Template       string
+	RawLines       []string
+	BaselinePerMin float64
+	CurrentPerMin  float64
+}
+
+type pending struct {
+	seq      uint64
+	severity severity.Level
+	template string
+	count    uint64
+	since    time.Time
+}
+
+// Renderer accumulates repeat counts per structural pattern and flushes
+// them on a bounded cadence. It is not safe for concurrent use.
+type Renderer struct {
+	w    io.Writer
+	opts Options
+
+	pending   map[fingerprint.ID]*pending
+	seq       uint64
+	lastCheck time.Time
+}
+
+// New creates a Renderer writing to w.
+func New(w io.Writer, opts Options) *Renderer {
+	return &Renderer{w: &safeWriter{w: w}, opts: opts, pending: make(map[fingerprint.ID]*pending)}
+}
+
+// Broken reports whether the destination writer has been detected as a
+// closed pipe. Once true, all further calls are cheap no-ops and the
+// caller should stop reading input for output purposes.
+func (r *Renderer) Broken() bool {
+	sw, ok := r.w.(*safeWriter)
+	return ok && sw.broken
+}
 
 // safeWriter wraps the destination writer so a closed downstream pipe
 // (e.g. `logquiet | head`) becomes a recorded, checkable condition instead
@@ -48,82 +137,6 @@ func isBrokenPipe(err error) bool {
 	return errors.Is(err, syscall.EPIPE) || errors.Is(err, syscall.ECONNRESET)
 }
 
-// Options configures a Renderer.
-type Options struct {
-	IsTTY   bool
-	Plain   bool
-	NoColor bool
-	JSON    bool
-	// FlushInterval is how often a plain-mode or JSON-mode active streak's
-	// counter is flushed while it is still accumulating.
-	FlushInterval time.Duration
-	// RepaintInterval throttles TTY in-place counter repaints.
-	RepaintInterval time.Duration
-}
-
-// DefaultOptions returns sensible defaults; callers override IsTTY/Plain/
-// NoColor/JSON based on flags and terminal detection.
-func DefaultOptions() Options {
-	return Options{
-		FlushInterval:   2 * time.Second,
-		RepaintInterval: 150 * time.Millisecond,
-	}
-}
-
-// Event carries everything a renderer needs to display a brand-new or
-// recurring-but-not-currently-active pattern.
-type Event struct {
-	Fingerprint fingerprint.ID
-	Severity    severity.Level
-	Template    string
-	RawLines    []string
-	IsNew       bool
-}
-
-// Anomaly carries the data needed to render a frequency-spike banner.
-type Anomaly struct {
-	Fingerprint    fingerprint.ID
-	Severity       severity.Level
-	Template       string
-	RawLines       []string
-	BaselinePerMin float64
-	CurrentPerMin  float64
-}
-
-// Renderer is stateful: it tracks the currently "active" streak (the most
-// recently displayed pattern) so repeats can be collapsed into a counter.
-type Renderer struct {
-	w    io.Writer
-	opts Options
-
-	activeFP      fingerprint.ID
-	activeOpen    bool
-	activeCount   uint64
-	counterShown  bool
-	lastPainted   uint64
-	lastFlush     time.Time
-	lastRepaint   time.Time
-}
-
-// New creates a Renderer writing to w.
-func New(w io.Writer, opts Options) *Renderer {
-	return &Renderer{w: &safeWriter{w: w}, opts: opts}
-}
-
-// Broken reports whether the destination writer has been detected as a
-// closed pipe. Once true, all further Emit/Repeat/Finalize calls are cheap
-// no-ops and the caller should stop reading input for output purposes.
-func (r *Renderer) Broken() bool {
-	sw, ok := r.w.(*safeWriter)
-	return ok && sw.broken
-}
-
-// IsActive reports whether fp is the pattern currently being displayed as
-// an in-progress repeat streak.
-func (r *Renderer) IsActive(fp fingerprint.ID) bool {
-	return r.activeOpen && r.activeFP == fp
-}
-
 // ANSI helpers.
 const (
 	ansiReset  = "\x1b[0m"
@@ -131,8 +144,6 @@ const (
 	ansiYellow = "\x1b[33m"
 	ansiRed    = "\x1b[31m"
 	ansiBold   = "\x1b[1m"
-	cursorUp   = "\x1b[1A"
-	clearLine  = "\x1b[2K"
 )
 
 func (r *Renderer) color(lvl severity.Level) (prefix, reset string) {
@@ -155,15 +166,15 @@ func (r *Renderer) color(lvl severity.Level) (prefix, reset string) {
 
 // jsonLine is the stable NDJSON schema for --json mode.
 type jsonLine struct {
-	Type           string  `json:"type"`
-	Fingerprint    string  `json:"fingerprint,omitempty"`
-	Severity       string  `json:"severity,omitempty"`
-	Template       string  `json:"template,omitempty"`
+	Type           string   `json:"type"`
+	Fingerprint    string   `json:"fingerprint,omitempty"`
+	Severity       string   `json:"severity,omitempty"`
+	Template       string   `json:"template,omitempty"`
 	Lines          []string `json:"lines,omitempty"`
-	Count          uint64  `json:"count,omitempty"`
-	New            bool    `json:"new,omitempty"`
-	BaselinePerMin float64 `json:"baseline_per_min,omitempty"`
-	CurrentPerMin  float64 `json:"current_per_min,omitempty"`
+	Count          uint64   `json:"count,omitempty"`
+	New            bool     `json:"new,omitempty"`
+	BaselinePerMin float64  `json:"baseline_per_min,omitempty"`
+	CurrentPerMin  float64  `json:"current_per_min,omitempty"`
 }
 
 func (r *Renderer) emitJSON(v jsonLine) {
@@ -174,11 +185,9 @@ func (r *Renderer) emitJSON(v jsonLine) {
 	_, _ = fmt.Fprintln(r.w, string(b))
 }
 
-// Emit displays a new event, or a recurrence of a pattern that was not the
-// immediately-preceding one. It finalizes any currently active streak first.
+// Emit displays a brand-new pattern's first occurrence in full, with its
+// real (non-normalized) values.
 func (r *Renderer) Emit(evt Event) {
-	r.finalize()
-
 	if r.opts.JSON {
 		r.emitJSON(jsonLine{
 			Type:        "event",
@@ -189,117 +198,121 @@ func (r *Renderer) Emit(evt Event) {
 			New:         evt.IsNew,
 			Count:       1,
 		})
-	} else {
-		prefix, reset := r.color(evt.Severity)
-		icon := evt.Severity.Icon()
-		lines := evt.RawLines
-		if !evt.IsNew {
-			lines = []string{evt.Template}
-		}
-		for i, line := range lines {
-			if i == 0 {
-				label := evt.Severity.String()
-				if evt.Severity == severity.Unknown {
-					_, _ = fmt.Fprintf(r.w, "%s%s%s\n", prefix, line, reset)
-				} else {
-					_, _ = fmt.Fprintf(r.w, "%s%s %s %s%s\n", prefix, icon, label, line, reset)
-				}
+		return
+	}
+	prefix, reset := r.color(evt.Severity)
+	icon := evt.Severity.Icon()
+	for i, line := range evt.RawLines {
+		if i == 0 {
+			if evt.Severity == severity.Unknown {
+				_, _ = fmt.Fprintf(r.w, "%s%s%s\n", prefix, line, reset)
 			} else {
-				_, _ = fmt.Fprintf(r.w, "%s  %s%s\n", prefix, line, reset)
+				_, _ = fmt.Fprintf(r.w, "%s%s %s %s%s\n", prefix, icon, evt.Severity.String(), line, reset)
 			}
-		}
-	}
-
-	r.activeFP = evt.Fingerprint
-	r.activeOpen = true
-	r.activeCount = 1
-	r.counterShown = false
-	r.lastPainted = 1
-	r.lastFlush = time.Now()
-}
-
-// Repeat registers another occurrence of the currently active pattern and
-// updates its visible counter according to the render mode.
-func (r *Renderer) Repeat(fp fingerprint.ID, now time.Time) {
-	if !r.activeOpen || fp != r.activeFP {
-		return
-	}
-	r.activeCount++
-
-	if r.opts.JSON {
-		if now.Sub(r.lastFlush) >= r.opts.FlushInterval {
-			r.flushCounter(now)
-		}
-		return
-	}
-	if r.opts.Plain || !r.opts.IsTTY {
-		if now.Sub(r.lastFlush) >= r.opts.FlushInterval {
-			r.flushCounter(now)
-		}
-		return
-	}
-
-	// TTY: repaint in place, throttled.
-	if now.Sub(r.lastRepaint) < r.opts.RepaintInterval {
-		return
-	}
-	r.paintCounterTTY()
-	r.lastRepaint = now
-}
-
-func (r *Renderer) paintCounterTTY() {
-	if r.counterShown {
-		_, _ = fmt.Fprint(r.w, cursorUp, clearLine)
-	}
-	_, _ = fmt.Fprintf(r.w, "  × %d\n", r.activeCount)
-	r.counterShown = true
-	r.lastPainted = r.activeCount
-}
-
-func (r *Renderer) flushCounter(now time.Time) {
-	if r.activeCount == r.lastPainted {
-		return
-	}
-	if r.opts.JSON {
-		r.emitJSON(jsonLine{Type: "repeat_update", Fingerprint: fpStr(r.activeFP), Count: r.activeCount})
-	} else {
-		_, _ = fmt.Fprintf(r.w, "  × %d\n", r.activeCount)
-	}
-	r.lastPainted = r.activeCount
-	r.counterShown = true
-	r.lastFlush = now
-}
-
-// finalize ends the currently active streak, if any, ensuring its final
-// count is visible before something else is printed.
-func (r *Renderer) finalize() {
-	if !r.activeOpen {
-		return
-	}
-	if r.activeCount > r.lastPainted {
-		if r.opts.JSON {
-			r.emitJSON(jsonLine{Type: "repeat_final", Fingerprint: fpStr(r.activeFP), Count: r.activeCount})
-		} else if r.opts.Plain || !r.opts.IsTTY {
-			_, _ = fmt.Fprintf(r.w, "  × %d\n", r.activeCount)
 		} else {
-			r.paintCounterTTY()
+			_, _ = fmt.Fprintf(r.w, "%s  %s%s\n", prefix, line, reset)
 		}
 	}
-	if !r.opts.JSON {
-		_, _ = fmt.Fprintln(r.w)
-	}
-	r.activeOpen = false
-	r.counterShown = false
+	_, _ = fmt.Fprintln(r.w)
 }
 
-// Finalize is the exported form, called at EOF/shutdown.
-func (r *Renderer) Finalize() { r.finalize() }
+// Accumulate registers another occurrence of an already-seen pattern. It
+// does not print anything itself; Tick decides when accumulated counts are
+// flushed.
+func (r *Renderer) Accumulate(fp fingerprint.ID, lvl severity.Level, template string, now time.Time) {
+	p, ok := r.pending[fp]
+	if !ok {
+		r.seq++
+		p = &pending{seq: r.seq, severity: lvl, template: template, since: now}
+		r.pending[fp] = p
+	}
+	p.count++
+}
 
-// EmitAnomaly prints a frequency-spike banner, finalizing any active streak
-// first. This is always shown in full immediately; anomalies are never
-// throttled or collapsed.
-func (r *Renderer) EmitAnomaly(a Anomaly) {
-	r.finalize()
+// interval returns the flush cadence for a given severity.
+func (r *Renderer) interval(lvl severity.Level) time.Duration {
+	if lvl.Rank() >= r.opts.ProtectRank {
+		return r.opts.ProtectedFlushInterval
+	}
+	return r.opts.FlushInterval
+}
+
+// Tick flushes any accumulating patterns whose interval has elapsed. It is
+// cheap to call frequently: the common case is a single time comparison.
+func (r *Renderer) Tick(now time.Time) {
+	if len(r.pending) == 0 {
+		return
+	}
+	minInterval := r.opts.ProtectedFlushInterval
+	if r.opts.FlushInterval < minInterval {
+		minInterval = r.opts.FlushInterval
+	}
+	if !r.lastCheck.IsZero() && now.Sub(r.lastCheck) < minInterval/4 {
+		return
+	}
+	r.lastCheck = now
+
+	var due []fingerprint.ID
+	for fp, p := range r.pending {
+		if now.Sub(p.since) >= r.interval(p.severity) {
+			due = append(due, fp)
+		}
+	}
+	sort.Slice(due, func(i, j int) bool { return r.pending[due[i]].seq < r.pending[due[j]].seq })
+	for _, fp := range due {
+		r.flushOne(fp, now)
+	}
+}
+
+// FlushFingerprint immediately flushes one pattern's pending counter, if
+// any, regardless of whether its interval has elapsed. Used before an
+// anomaly banner so the running count leading up to it is visible first.
+func (r *Renderer) FlushFingerprint(fp fingerprint.ID, now time.Time) {
+	if _, ok := r.pending[fp]; ok {
+		r.flushOne(fp, now)
+	}
+}
+
+// FlushAll immediately flushes every accumulating pattern. Call at EOF/shutdown.
+func (r *Renderer) FlushAll(now time.Time) {
+	var all []fingerprint.ID
+	for fp := range r.pending {
+		all = append(all, fp)
+	}
+	sort.Slice(all, func(i, j int) bool { return r.pending[all[i]].seq < r.pending[all[j]].seq })
+	for _, fp := range all {
+		r.flushOne(fp, now)
+	}
+}
+
+func (r *Renderer) flushOne(fp fingerprint.ID, now time.Time) {
+	p := r.pending[fp]
+	delete(r.pending, fp)
+	if p == nil || p.count == 0 {
+		return
+	}
+	if r.opts.JSON {
+		r.emitJSON(jsonLine{Type: "repeat_summary", Fingerprint: fpStr(fp), Severity: p.severity.String(), Template: p.template, Count: p.count})
+		return
+	}
+	prefix, reset := r.color(p.severity)
+	icon := p.severity.Icon()
+	if p.severity == severity.Unknown {
+		_, _ = fmt.Fprintf(r.w, "%s%s%s\n", prefix, p.template, reset)
+	} else {
+		_, _ = fmt.Fprintf(r.w, "%s%s %s %s%s\n", prefix, icon, p.severity.String(), p.template, reset)
+	}
+	_, _ = fmt.Fprintf(r.w, "%s  × %d%s\n\n", prefix, p.count, reset)
+}
+
+// Finalize flushes any remaining accumulated counters. Call at EOF/shutdown.
+func (r *Renderer) Finalize(now time.Time) { r.FlushAll(now) }
+
+// EmitAnomaly prints a frequency-spike banner. This is always shown in
+// full immediately; anomalies are never throttled or deferred. Any pending
+// counter for the same pattern is flushed first so context is not lost.
+func (r *Renderer) EmitAnomaly(a Anomaly, now time.Time) {
+	r.FlushFingerprint(a.Fingerprint, now)
 
 	if r.opts.JSON {
 		r.emitJSON(jsonLine{

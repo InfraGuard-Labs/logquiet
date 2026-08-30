@@ -13,11 +13,16 @@ import (
 )
 
 // leading timestamp shapes tried when no severity token was found at all
-// (e.g. plain access-log style lines with no level marker).
+// (e.g. plain access-log style lines with no level marker). Each consumes
+// at most one trailing separator character, not a greedy whitespace run:
+// container runtimes (Docker/Kubernetes) prefix every line of raw output -
+// including each line of a traceback - with an identical timestamp, so any
+// indentation immediately following it is the traceback's own and must
+// survive for multiline continuation detection.
 var leadingTimestamp = []*regexp.Regexp{
-	regexp.MustCompile(`^\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}:\d{2}(\.\d{1,9})?(Z|[+-]\d{2}:?\d{2})?\s+`),
-	regexp.MustCompile(`^(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) {1,2}\d{1,2} \d{2}:\d{2}:\d{2}\s+`),
-	regexp.MustCompile(`^\[\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}:\d{2}[^\]]*\]\s*`),
+	regexp.MustCompile(`^\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}:\d{2}(\.\d{1,9})?(Z|[+-]\d{2}:?\d{2})?[ \t]?`),
+	regexp.MustCompile(`^(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) {1,2}\d{1,2} \d{2}:\d{2}:\d{2}[ \t]?`),
+	regexp.MustCompile(`^\[\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}:\d{2}[^\]]*\][ \t]?`),
 }
 
 // Extract returns the detected severity (Unknown if none found) and the

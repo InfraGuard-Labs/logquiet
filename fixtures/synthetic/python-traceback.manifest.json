@@ -1,0 +1,9 @@
+{
+  "scenario": "python-traceback",
+  "synthetic": true,
+  "total_lines": 196,
+  "known_important_substrings": [
+    "ZeroDivisionError: division by zero"
+  ],
+  "description": "A Celery-style worker log with one unhandled ZeroDivisionError traceback amid routine task processing."
+}

@@ -1,0 +1,105 @@
+2026-08-30 03:00:00 ##[group]Run step: checkout
+2026-08-30 03:00:01 [checkout] ok - step 1/15
+2026-08-30 03:00:02 [checkout] ok - step 2/15
+2026-08-30 03:00:03 [checkout] ok - step 3/15
+2026-08-30 03:00:04 [checkout] ok - step 4/15
+2026-08-30 03:00:05 [checkout] ok - step 5/15
+2026-08-30 03:00:06 [checkout] ok - step 6/15
+2026-08-30 03:00:07 [checkout] ok - step 7/15
+2026-08-30 03:00:08 [checkout] ok - step 8/15
+2026-08-30 03:00:09 [checkout] ok - step 9/15
+2026-08-30 03:00:10 [checkout] ok - step 10/15
+2026-08-30 03:00:11 [checkout] ok - step 11/15
+2026-08-30 03:00:12 [checkout] ok - step 12/15
+2026-08-30 03:00:13 [checkout] ok - step 13/15
+2026-08-30 03:00:14 [checkout] ok - step 14/15
+2026-08-30 03:00:15 [checkout] ok - step 15/15
+2026-08-30 03:00:16 ##[endgroup]
+2026-08-30 03:00:17 ##[group]Run step: install-deps
+2026-08-30 03:00:18 [install-deps] ok - step 1/15
+2026-08-30 03:00:19 [install-deps] ok - step 2/15
+2026-08-30 03:00:20 [install-deps] ok - step 3/15
+2026-08-30 03:00:21 [install-deps] ok - step 4/15
+2026-08-30 03:00:22 [install-deps] ok - step 5/15
+2026-08-30 03:00:23 [install-deps] ok - step 6/15
+2026-08-30 03:00:24 [install-deps] ok - step 7/15
+2026-08-30 03:00:25 [install-deps] ok - step 8/15
+2026-08-30 03:00:26 [install-deps] ok - step 9/15
+2026-08-30 03:00:27 [install-deps] ok - step 10/15
+2026-08-30 03:00:28 [install-deps] ok - step 11/15
+2026-08-30 03:00:29 [install-deps] ok - step 12/15
+2026-08-30 03:00:30 [install-deps] ok - step 13/15
+2026-08-30 03:00:31 [install-deps] ok - step 14/15
+2026-08-30 03:00:32 [install-deps] ok - step 15/15
+2026-08-30 03:00:33 ##[endgroup]
+2026-08-30 03:00:34 ##[group]Run step: lint
+2026-08-30 03:00:35 [lint] ok - step 1/15
+2026-08-30 03:00:36 [lint] ok - step 2/15
+2026-08-30 03:00:37 [lint] ok - step 3/15
+2026-08-30 03:00:38 [lint] ok - step 4/15
+2026-08-30 03:00:39 [lint] ok - step 5/15
+2026-08-30 03:00:40 [lint] ok - step 6/15
+2026-08-30 03:00:41 [lint] ok - step 7/15
+2026-08-30 03:00:42 [lint] ok - step 8/15
+2026-08-30 03:00:43 [lint] ok - step 9/15
+2026-08-30 03:00:44 [lint] ok - step 10/15
+2026-08-30 03:00:45 [lint] ok - step 11/15
+2026-08-30 03:00:46 [lint] ok - step 12/15
+2026-08-30 03:00:47 [lint] ok - step 13/15
+2026-08-30 03:00:48 [lint] ok - step 14/15
+2026-08-30 03:00:49 [lint] ok - step 15/15
+2026-08-30 03:00:50 ##[endgroup]
+2026-08-30 03:00:51 ##[group]Run step: unit-tests
+2026-08-30 03:00:52 [unit-tests] ok - step 1/15
+2026-08-30 03:00:53 [unit-tests] ok - step 2/15
+2026-08-30 03:00:54 [unit-tests] ok - step 3/15
+2026-08-30 03:00:55 [unit-tests] ok - step 4/15
+2026-08-30 03:00:56 [unit-tests] ok - step 5/15
+2026-08-30 03:00:57 [unit-tests] ok - step 6/15
+2026-08-30 03:00:58 [unit-tests] ok - step 7/15
+2026-08-30 03:00:59 [unit-tests] ok - step 8/15
+2026-08-30 03:01:00 [unit-tests] ok - step 9/15
+2026-08-30 03:01:01 [unit-tests] ok - step 10/15
+2026-08-30 03:01:02 [unit-tests] ok - step 11/15
+2026-08-30 03:01:03 [unit-tests] ok - step 12/15
+2026-08-30 03:01:04 [unit-tests] ok - step 13/15
+2026-08-30 03:01:05 [unit-tests] ok - step 14/15
+2026-08-30 03:01:06 [unit-tests] ok - step 15/15
+2026-08-30 03:01:07 ##[endgroup]
+2026-08-30 03:01:08 ##[group]Run step: build
+2026-08-30 03:01:09 [build] ok - step 1/15
+2026-08-30 03:01:10 [build] ok - step 2/15
+2026-08-30 03:01:11 [build] ok - step 3/15
+2026-08-30 03:01:12 [build] ok - step 4/15
+2026-08-30 03:01:13 [build] ok - step 5/15
+2026-08-30 03:01:14 [build] ok - step 6/15
+2026-08-30 03:01:15 [build] ok - step 7/15
+2026-08-30 03:01:16 [build] ok - step 8/15
+2026-08-30 03:01:17 [build] ok - step 9/15
+2026-08-30 03:01:18 [build] ok - step 10/15
+2026-08-30 03:01:19 [build] ok - step 11/15
+2026-08-30 03:01:20 [build] ok - step 12/15
+2026-08-30 03:01:21 [build] ok - step 13/15
+2026-08-30 03:01:22 [build] ok - step 14/15
+2026-08-30 03:01:23 [build] ok - step 15/15
+2026-08-30 03:01:24 ##[endgroup]
+2026-08-30 03:01:25 ##[group]Run step: integration-tests
+2026-08-30 03:01:26 [integration-tests] ok - step 1/15
+2026-08-30 03:01:27 [integration-tests] ok - step 2/15
+2026-08-30 03:01:28 [integration-tests] ok - step 3/15
+2026-08-30 03:01:29 [integration-tests] ok - step 4/15
+2026-08-30 03:01:30 [integration-tests] ok - step 5/15
+2026-08-30 03:01:31 [integration-tests] ok - step 6/15
+2026-08-30 03:01:32 [integration-tests] ok - step 7/15
+2026-08-30 03:01:33 [integration-tests] ok - step 8/15
+2026-08-30 03:01:34 [integration-tests] ok - step 9/15
+2026-08-30 03:01:35 [integration-tests] ok - step 10/15
+2026-08-30 03:01:36 [integration-tests] ok - step 11/15
+2026-08-30 03:01:37 [integration-tests] ok - step 12/15
+2026-08-30 03:01:38 [integration-tests] ok - step 13/15
+2026-08-30 03:01:39 [integration-tests] ok - step 14/15
+2026-08-30 03:01:40 [integration-tests] ok - step 15/15
+2026-08-30 03:01:41 ##[endgroup]
+2026-08-30 03:01:42 ##[group]Run step: package
+2026-08-30 03:01:43 [package] ERROR: failed to push image registry.internal/payment-api:v1.4.3: unauthorized: authentication required
+2026-08-30 03:01:44 ##[error]Process completed with exit code 1.

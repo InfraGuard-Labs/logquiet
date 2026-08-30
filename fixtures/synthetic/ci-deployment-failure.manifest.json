@@ -1,0 +1,10 @@
+{
+  "scenario": "ci-deployment-failure",
+  "synthetic": true,
+  "total_lines": 105,
+  "known_important_substrings": [
+    "failed to push image",
+    "Process completed with exit code 1"
+  ],
+  "description": "A GitHub-Actions-style CI log where every step succeeds until the final registry push fails on auth."
+}

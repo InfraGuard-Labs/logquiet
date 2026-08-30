@@ -1,0 +1,10 @@
+{
+  "scenario": "kubernetes-pod-restart-loop",
+  "synthetic": true,
+  "total_lines": 321,
+  "known_important_substrings": [
+    "panic: failed to connect to config store",
+    "CrashLoopBackOff after 40 restarts"
+  ],
+  "description": "40 restart cycles of a pod that repeatedly panics connecting to its config store, ending in a CrashLoopBackOff readiness failure."
+}

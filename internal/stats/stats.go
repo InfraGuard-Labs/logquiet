@@ -33,20 +33,20 @@ func New() *Counters {
 // Snapshot is a point-in-time, human- and machine-readable view of Counters
 // plus derived metrics.
 type Snapshot struct {
-	InputLines           uint64  `json:"input_lines"`
-	DisplayedEvents      uint64  `json:"displayed_events"`
-	SuppressedEvents     uint64  `json:"suppressed_events"`
-	SuppressionPercent   float64 `json:"suppression_percentage"`
-	StructuralPatterns   int     `json:"structural_patterns"`
-	PatternsEvicted      uint64  `json:"patterns_evicted"`
-	WarningEvents        uint64  `json:"warning_events"`
-	ErrorEvents          uint64  `json:"error_events"`
-	AnomalyEvents        uint64  `json:"anomaly_events"`
-	TruncatedLines       uint64  `json:"truncated_lines"`
-	ElapsedSeconds       float64 `json:"elapsed_seconds"`
-	LinesPerSecond       float64 `json:"lines_per_second"`
-	MBPerSecond          float64 `json:"mb_per_second"`
-	ApproxMemoryMB       float64 `json:"approx_memory_mb"`
+	InputLines         uint64  `json:"input_lines"`
+	DisplayedEvents    uint64  `json:"displayed_events"`
+	SuppressedEvents   uint64  `json:"suppressed_events"`
+	SuppressionPercent float64 `json:"suppression_percentage"`
+	StructuralPatterns int     `json:"structural_patterns"`
+	PatternsEvicted    uint64  `json:"patterns_evicted"`
+	WarningEvents      uint64  `json:"warning_events"`
+	ErrorEvents        uint64  `json:"error_events"`
+	AnomalyEvents      uint64  `json:"anomaly_events"`
+	TruncatedLines     uint64  `json:"truncated_lines"`
+	ElapsedSeconds     float64 `json:"elapsed_seconds"`
+	LinesPerSecond     float64 `json:"lines_per_second"`
+	MBPerSecond        float64 `json:"mb_per_second"`
+	ApproxMemoryMB     float64 `json:"approx_memory_mb"`
 }
 
 // Snapshot computes derived metrics as of now, given the current pattern

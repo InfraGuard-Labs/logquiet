@@ -1,0 +1,9 @@
+{
+  "scenario": "go-panic",
+  "synthetic": true,
+  "total_lines": 138,
+  "known_important_substrings": [
+    "runtime error: index out of range"
+  ],
+  "description": "A Go service log with one index-out-of-range panic and full goroutine trace."
+}

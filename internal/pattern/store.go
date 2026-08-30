@@ -14,10 +14,10 @@ import (
 // simply re-learned as if it were new, which is safe by construction (see
 // docs/TECHNICAL_METHOD.md, "Bounded memory").
 type Store struct {
-	cfg      Config
-	byID     map[fingerprint.ID]*State
-	lru      *list.List // front = most recently used
-	evicted  uint64
+	cfg     Config
+	byID    map[fingerprint.ID]*State
+	lru     *list.List // front = most recently used
+	evicted uint64
 }
 
 // NewStore creates an empty Store using cfg.

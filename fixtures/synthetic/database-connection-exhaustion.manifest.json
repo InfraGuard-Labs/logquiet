@@ -1,0 +1,10 @@
+{
+  "scenario": "database-connection-exhaustion",
+  "synthetic": true,
+  "total_lines": 337,
+  "known_important_substrings": [
+    "DATABASE TIMEOUT: Host 10.0.1.45",
+    "TimeoutError: DB connection lost"
+  ],
+  "description": "A healthy connection pool gradually saturates, times out, and recovers after retries."
+}

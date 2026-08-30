@@ -29,13 +29,13 @@ import (
 // Config tunes anomaly sensitivity and store bounds. Zero-value Config is
 // invalid; use DefaultConfig().
 type Config struct {
-	BucketWidth       time.Duration
-	WindowBuckets     int
-	BaselineAlpha     float64
-	WarmupDuration    time.Duration
-	SpikeMultiplier   float64
-	MinWindowEvents   int
-	Cooldown          time.Duration
+	BucketWidth        time.Duration
+	WindowBuckets      int
+	BaselineAlpha      float64
+	WarmupDuration     time.Duration
+	SpikeMultiplier    float64
+	MinWindowEvents    int
+	Cooldown           time.Duration
 	MaxTrackedPatterns int
 
 	// ProtectRank and ProtectMultiplier give severities at/above ProtectRank
@@ -53,13 +53,13 @@ func DefaultConfig() Config {
 		BucketWidth:        5 * time.Second,
 		WindowBuckets:      12, // 60s current-rate window
 		BaselineAlpha:      0.05,
-		WarmupDuration:      2 * time.Minute,
-		SpikeMultiplier:     8.0,
-		MinWindowEvents:     5,
-		Cooldown:            60 * time.Second,
-		MaxTrackedPatterns:  10000,
-		ProtectRank:         int(severity.Error),
-		ProtectMultiplier:   3.0,
+		WarmupDuration:     2 * time.Minute,
+		SpikeMultiplier:    8.0,
+		MinWindowEvents:    5,
+		Cooldown:           60 * time.Second,
+		MaxTrackedPatterns: 10000,
+		ProtectRank:        int(severity.Error),
+		ProtectMultiplier:  3.0,
 	}
 }
 

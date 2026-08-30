@@ -63,10 +63,10 @@ func (p *Pipeline) ProcessLine(raw string, now time.Time) {
 
 	_, content := logline.Extract(raw)
 	completed, ok := p.ml.Feed(raw, content)
-	if !ok {
-		return
+	if ok {
+		p.handleBlock(completed, now)
 	}
-	p.handleBlock(completed, now)
+	p.renderer.Tick(now)
 }
 
 // Finish flushes any trailing in-progress multiline block and finalizes
@@ -75,7 +75,7 @@ func (p *Pipeline) Finish(now time.Time) {
 	if b, ok := p.ml.Flush(); ok {
 		p.handleBlock(b, now)
 	}
-	p.renderer.Finalize()
+	p.renderer.Finalize(now)
 }
 
 func (p *Pipeline) handleBlock(block multiline.Block, now time.Time) {
@@ -111,13 +111,9 @@ func (p *Pipeline) handleBlock(block multiline.Block, now time.Time) {
 			RawLines:       block.Contents,
 			BaselinePerMin: spike.BaselinePerMin,
 			CurrentPerMin:  spike.CurrentPerMin,
-		})
+		}, now)
 
-	case !isNew && p.renderer.IsActive(fp):
-		p.renderer.Repeat(fp, now)
-		p.Counters.SuppressedEvents++
-
-	default:
+	case isNew:
 		p.Counters.DisplayedEvents++
 		p.renderer.Emit(render.Event{
 			Fingerprint: fp,
@@ -126,6 +122,10 @@ func (p *Pipeline) handleBlock(block multiline.Block, now time.Time) {
 			RawLines:    block.Contents,
 			IsNew:       isNew,
 		})
+
+	default:
+		p.Counters.SuppressedEvents++
+		p.renderer.Accumulate(fp, lvl, template, now)
 	}
 }
 

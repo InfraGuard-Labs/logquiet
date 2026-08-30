@@ -1,0 +1,10 @@
+{
+  "scenario": "java-exception",
+  "synthetic": true,
+  "total_lines": 237,
+  "known_important_substrings": [
+    "java.lang.NullPointerException",
+    "Caused by: java.lang.IllegalStateException"
+  ],
+  "description": "A Spring Boot access-log stream with one NullPointerException with a chained cause in the middle."
+}

@@ -19,18 +19,18 @@ import "regexp"
 const MaxBlockLines = 500
 
 var (
-	reIndented       = regexp.MustCompile(`^[ \t]+\S`)
-	rePyTraceback    = regexp.MustCompile(`Traceback \(most recent call last\):\s*$`)
-	rePyExcSummary   = regexp.MustCompile(`^[A-Za-z_][\w.]*(Error|Exception|Warning|Interrupt|SystemExit)\b`)
-	reJavaAt         = regexp.MustCompile(`^\s*at\s+\S+\(`)
-	reCausedBy       = regexp.MustCompile(`^\s*Caused by:`)
-	reMoreFrames     = regexp.MustCompile(`^\s*\.\.\.\s*\d+\s*more\s*$`)
-	reGoPanicHeader  = regexp.MustCompile(`^panic:`)
-	reGoroutineHead  = regexp.MustCompile(`^goroutine \d+ \[`)
-	reGoCreatedBy    = regexp.MustCompile(`^created by\b`)
-	reGoFrameCall    = regexp.MustCompile(`^[\w./*()\[\]{}, ]+\(.*\)\s*$`)
-	reGoFrameFile    = regexp.MustCompile(`^\s+\S+\.go:\d+`)
-	reExitStatus     = regexp.MustCompile(`^exit status \d+\s*$`)
+	rePyTraceback   = regexp.MustCompile(`Traceback \(most recent call last\):\s*$`)
+	rePyExcSummary  = regexp.MustCompile(`^[A-Za-z_][\w.]*(Error|Exception|Warning|Interrupt|SystemExit)\b`)
+	rePyFileLine    = regexp.MustCompile(`^\s*File "[^"]*", line \d+`)
+	reJavaAt        = regexp.MustCompile(`^\s*at\s+\S+\(`)
+	reCausedBy      = regexp.MustCompile(`^\s*Caused by:`)
+	reMoreFrames    = regexp.MustCompile(`^\s*\.\.\.\s*\d+\s*more\s*$`)
+	reGoPanicHeader = regexp.MustCompile(`^panic:`)
+	reGoroutineHead = regexp.MustCompile(`^goroutine \d+ \[`)
+	reGoCreatedBy   = regexp.MustCompile(`^created by\b`)
+	reGoFrameCall   = regexp.MustCompile(`^[\w./*()\[\]{}, ]+\(.*\)\s*$`)
+	reGoFrameFile   = regexp.MustCompile(`^\s+\S+\.go:\d+`)
+	reExitStatus    = regexp.MustCompile(`^exit status \d+\s*$`)
 )
 
 type mode int
@@ -99,7 +99,11 @@ func (a *Assembler) start(line, content string) {
 	a.lines = []string{line}
 	a.contents = []string{content}
 	switch {
-	case reGoPanicHeader.MatchString(content):
+	// "panic:" is checked against the raw line, not content: severity
+	// detection treats the bare word "panic" as a FATAL-level token like
+	// any other and strips it, but here it is also a structural marker
+	// that must survive for Go-panic mode detection.
+	case reGoPanicHeader.MatchString(line):
 		a.mode = modeGoPanic
 	case rePyTraceback.MatchString(content):
 		a.mode = modePyTraceback
@@ -117,6 +121,31 @@ func (a *Assembler) flush() Block {
 	return b
 }
 
+// looksIndented reports whether line begins with indentation substantial
+// enough to be a genuine multiline continuation, as opposed to a single
+// leftover space from severity-tag column alignment (e.g. many logging
+// frameworks pad "INFO" with a trailing space so it lines up with "ERROR");
+// see logline.Extract, which strips only one separator character per level
+// tag and deliberately leaves further padding in place for this check to
+// reject. A single leading tab is also accepted unconditionally, since a
+// tab is essentially never used merely as alignment padding.
+func looksIndented(line string) bool {
+	if len(line) == 0 {
+		return false
+	}
+	if line[0] == '\t' {
+		return len(line) > 1
+	}
+	if line[0] == ' ' && len(line) > 1 && line[1] == ' ' {
+		i := 2
+		for i < len(line) && (line[i] == ' ' || line[i] == '\t') {
+			i++
+		}
+		return i < len(line)
+	}
+	return false
+}
+
 func (a *Assembler) continuesBlock(line string) bool {
 	if line == "" {
 		// A blank line separates events, except immediately inside a Go
@@ -125,7 +154,7 @@ func (a *Assembler) continuesBlock(line string) bool {
 		return a.mode == modeGoPanic && len(a.lines) < 3
 	}
 
-	if reIndented.MatchString(line) {
+	if looksIndented(line) {
 		return true
 	}
 	if reJavaAt.MatchString(line) || reCausedBy.MatchString(line) || reMoreFrames.MatchString(line) {
@@ -134,7 +163,7 @@ func (a *Assembler) continuesBlock(line string) bool {
 
 	switch a.mode {
 	case modePyTraceback:
-		if rePyExcSummary.MatchString(line) {
+		if rePyExcSummary.MatchString(line) || rePyFileLine.MatchString(line) {
 			return true
 		}
 	case modeGoPanic:

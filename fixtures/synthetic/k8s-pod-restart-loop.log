@@ -1,0 +1,321 @@
+2026-08-30 03:00:00 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Pulling Pulling image "registry.internal/payment-api:v1.4.2"
+2026-08-30 03:00:01 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Pulled Successfully pulled image "registry.internal/payment-api:v1.4.2" in 812ms
+2026-08-30 03:00:02 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Created Created container payment-api
+2026-08-30 03:00:03 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Started Started container payment-api
+2026-08-30 03:00:04 [INFO] payment-api listening on :8080
+2026-08-30 03:00:05 [INFO] payment-api health check ok
+2026-08-30 03:00:06 [FATAL] panic: failed to connect to config store: dial tcp 10.4.0.9:2379: connect: connection refused
+2026-08-30 03:00:07 1 pod/payment-api-7c9f6d8b4d-x2k9p Warning BackOff Back-off restarting failed container
+2026-08-30 03:00:08 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Pulling Pulling image "registry.internal/payment-api:v1.4.2"
+2026-08-30 03:00:09 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Pulled Successfully pulled image "registry.internal/payment-api:v1.4.2" in 812ms
+2026-08-30 03:00:10 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Created Created container payment-api
+2026-08-30 03:00:11 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Started Started container payment-api
+2026-08-30 03:00:12 [INFO] payment-api listening on :8080
+2026-08-30 03:00:13 [INFO] payment-api health check ok
+2026-08-30 03:00:14 [FATAL] panic: failed to connect to config store: dial tcp 10.4.0.9:2379: connect: connection refused
+2026-08-30 03:00:15 1 pod/payment-api-7c9f6d8b4d-x2k9p Warning BackOff Back-off restarting failed container
+2026-08-30 03:00:16 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Pulling Pulling image "registry.internal/payment-api:v1.4.2"
+2026-08-30 03:00:17 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Pulled Successfully pulled image "registry.internal/payment-api:v1.4.2" in 812ms
+2026-08-30 03:00:18 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Created Created container payment-api
+2026-08-30 03:00:19 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Started Started container payment-api
+2026-08-30 03:00:20 [INFO] payment-api listening on :8080
+2026-08-30 03:00:21 [INFO] payment-api health check ok
+2026-08-30 03:00:22 [FATAL] panic: failed to connect to config store: dial tcp 10.4.0.9:2379: connect: connection refused
+2026-08-30 03:00:23 1 pod/payment-api-7c9f6d8b4d-x2k9p Warning BackOff Back-off restarting failed container
+2026-08-30 03:00:24 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Pulling Pulling image "registry.internal/payment-api:v1.4.2"
+2026-08-30 03:00:25 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Pulled Successfully pulled image "registry.internal/payment-api:v1.4.2" in 812ms
+2026-08-30 03:00:26 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Created Created container payment-api
+2026-08-30 03:00:27 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Started Started container payment-api
+2026-08-30 03:00:28 [INFO] payment-api listening on :8080
+2026-08-30 03:00:29 [INFO] payment-api health check ok
+2026-08-30 03:00:30 [FATAL] panic: failed to connect to config store: dial tcp 10.4.0.9:2379: connect: connection refused
+2026-08-30 03:00:31 1 pod/payment-api-7c9f6d8b4d-x2k9p Warning BackOff Back-off restarting failed container
+2026-08-30 03:00:32 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Pulling Pulling image "registry.internal/payment-api:v1.4.2"
+2026-08-30 03:00:33 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Pulled Successfully pulled image "registry.internal/payment-api:v1.4.2" in 812ms
+2026-08-30 03:00:34 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Created Created container payment-api
+2026-08-30 03:00:35 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Started Started container payment-api
+2026-08-30 03:00:36 [INFO] payment-api listening on :8080
+2026-08-30 03:00:37 [INFO] payment-api health check ok
+2026-08-30 03:00:38 [FATAL] panic: failed to connect to config store: dial tcp 10.4.0.9:2379: connect: connection refused
+2026-08-30 03:00:39 1 pod/payment-api-7c9f6d8b4d-x2k9p Warning BackOff Back-off restarting failed container
+2026-08-30 03:00:40 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Pulling Pulling image "registry.internal/payment-api:v1.4.2"
+2026-08-30 03:00:41 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Pulled Successfully pulled image "registry.internal/payment-api:v1.4.2" in 812ms
+2026-08-30 03:00:42 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Created Created container payment-api
+2026-08-30 03:00:43 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Started Started container payment-api
+2026-08-30 03:00:44 [INFO] payment-api listening on :8080
+2026-08-30 03:00:45 [INFO] payment-api health check ok
+2026-08-30 03:00:46 [FATAL] panic: failed to connect to config store: dial tcp 10.4.0.9:2379: connect: connection refused
+2026-08-30 03:00:47 1 pod/payment-api-7c9f6d8b4d-x2k9p Warning BackOff Back-off restarting failed container
+2026-08-30 03:00:48 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Pulling Pulling image "registry.internal/payment-api:v1.4.2"
+2026-08-30 03:00:49 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Pulled Successfully pulled image "registry.internal/payment-api:v1.4.2" in 812ms
+2026-08-30 03:00:50 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Created Created container payment-api
+2026-08-30 03:00:51 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Started Started container payment-api
+2026-08-30 03:00:52 [INFO] payment-api listening on :8080
+2026-08-30 03:00:53 [INFO] payment-api health check ok
+2026-08-30 03:00:54 [FATAL] panic: failed to connect to config store: dial tcp 10.4.0.9:2379: connect: connection refused
+2026-08-30 03:00:55 1 pod/payment-api-7c9f6d8b4d-x2k9p Warning BackOff Back-off restarting failed container
+2026-08-30 03:00:56 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Pulling Pulling image "registry.internal/payment-api:v1.4.2"
+2026-08-30 03:00:57 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Pulled Successfully pulled image "registry.internal/payment-api:v1.4.2" in 812ms
+2026-08-30 03:00:58 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Created Created container payment-api
+2026-08-30 03:00:59 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Started Started container payment-api
+2026-08-30 03:01:00 [INFO] payment-api listening on :8080
+2026-08-30 03:01:01 [INFO] payment-api health check ok
+2026-08-30 03:01:02 [FATAL] panic: failed to connect to config store: dial tcp 10.4.0.9:2379: connect: connection refused
+2026-08-30 03:01:03 1 pod/payment-api-7c9f6d8b4d-x2k9p Warning BackOff Back-off restarting failed container
+2026-08-30 03:01:04 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Pulling Pulling image "registry.internal/payment-api:v1.4.2"
+2026-08-30 03:01:05 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Pulled Successfully pulled image "registry.internal/payment-api:v1.4.2" in 812ms
+2026-08-30 03:01:06 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Created Created container payment-api
+2026-08-30 03:01:07 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Started Started container payment-api
+2026-08-30 03:01:08 [INFO] payment-api listening on :8080
+2026-08-30 03:01:09 [INFO] payment-api health check ok
+2026-08-30 03:01:10 [FATAL] panic: failed to connect to config store: dial tcp 10.4.0.9:2379: connect: connection refused
+2026-08-30 03:01:11 1 pod/payment-api-7c9f6d8b4d-x2k9p Warning BackOff Back-off restarting failed container
+2026-08-30 03:01:12 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Pulling Pulling image "registry.internal/payment-api:v1.4.2"
+2026-08-30 03:01:13 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Pulled Successfully pulled image "registry.internal/payment-api:v1.4.2" in 812ms
+2026-08-30 03:01:14 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Created Created container payment-api
+2026-08-30 03:01:15 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Started Started container payment-api
+2026-08-30 03:01:16 [INFO] payment-api listening on :8080
+2026-08-30 03:01:17 [INFO] payment-api health check ok
+2026-08-30 03:01:18 [FATAL] panic: failed to connect to config store: dial tcp 10.4.0.9:2379: connect: connection refused
+2026-08-30 03:01:19 1 pod/payment-api-7c9f6d8b4d-x2k9p Warning BackOff Back-off restarting failed container
+2026-08-30 03:01:20 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Pulling Pulling image "registry.internal/payment-api:v1.4.2"
+2026-08-30 03:01:21 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Pulled Successfully pulled image "registry.internal/payment-api:v1.4.2" in 812ms
+2026-08-30 03:01:22 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Created Created container payment-api
+2026-08-30 03:01:23 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Started Started container payment-api
+2026-08-30 03:01:24 [INFO] payment-api listening on :8080
+2026-08-30 03:01:25 [INFO] payment-api health check ok
+2026-08-30 03:01:26 [FATAL] panic: failed to connect to config store: dial tcp 10.4.0.9:2379: connect: connection refused
+2026-08-30 03:01:27 1 pod/payment-api-7c9f6d8b4d-x2k9p Warning BackOff Back-off restarting failed container
+2026-08-30 03:01:28 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Pulling Pulling image "registry.internal/payment-api:v1.4.2"
+2026-08-30 03:01:29 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Pulled Successfully pulled image "registry.internal/payment-api:v1.4.2" in 812ms
+2026-08-30 03:01:30 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Created Created container payment-api
+2026-08-30 03:01:31 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Started Started container payment-api
+2026-08-30 03:01:32 [INFO] payment-api listening on :8080
+2026-08-30 03:01:33 [INFO] payment-api health check ok
+2026-08-30 03:01:34 [FATAL] panic: failed to connect to config store: dial tcp 10.4.0.9:2379: connect: connection refused
+2026-08-30 03:01:35 1 pod/payment-api-7c9f6d8b4d-x2k9p Warning BackOff Back-off restarting failed container
+2026-08-30 03:01:36 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Pulling Pulling image "registry.internal/payment-api:v1.4.2"
+2026-08-30 03:01:37 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Pulled Successfully pulled image "registry.internal/payment-api:v1.4.2" in 812ms
+2026-08-30 03:01:38 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Created Created container payment-api
+2026-08-30 03:01:39 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Started Started container payment-api
+2026-08-30 03:01:40 [INFO] payment-api listening on :8080
+2026-08-30 03:01:41 [INFO] payment-api health check ok
+2026-08-30 03:01:42 [FATAL] panic: failed to connect to config store: dial tcp 10.4.0.9:2379: connect: connection refused
+2026-08-30 03:01:43 1 pod/payment-api-7c9f6d8b4d-x2k9p Warning BackOff Back-off restarting failed container
+2026-08-30 03:01:44 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Pulling Pulling image "registry.internal/payment-api:v1.4.2"
+2026-08-30 03:01:45 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Pulled Successfully pulled image "registry.internal/payment-api:v1.4.2" in 812ms
+2026-08-30 03:01:46 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Created Created container payment-api
+2026-08-30 03:01:47 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Started Started container payment-api
+2026-08-30 03:01:48 [INFO] payment-api listening on :8080
+2026-08-30 03:01:49 [INFO] payment-api health check ok
+2026-08-30 03:01:50 [FATAL] panic: failed to connect to config store: dial tcp 10.4.0.9:2379: connect: connection refused
+2026-08-30 03:01:51 1 pod/payment-api-7c9f6d8b4d-x2k9p Warning BackOff Back-off restarting failed container
+2026-08-30 03:01:52 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Pulling Pulling image "registry.internal/payment-api:v1.4.2"
+2026-08-30 03:01:53 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Pulled Successfully pulled image "registry.internal/payment-api:v1.4.2" in 812ms
+2026-08-30 03:01:54 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Created Created container payment-api
+2026-08-30 03:01:55 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Started Started container payment-api
+2026-08-30 03:01:56 [INFO] payment-api listening on :8080
+2026-08-30 03:01:57 [INFO] payment-api health check ok
+2026-08-30 03:01:58 [FATAL] panic: failed to connect to config store: dial tcp 10.4.0.9:2379: connect: connection refused
+2026-08-30 03:01:59 1 pod/payment-api-7c9f6d8b4d-x2k9p Warning BackOff Back-off restarting failed container
+2026-08-30 03:02:00 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Pulling Pulling image "registry.internal/payment-api:v1.4.2"
+2026-08-30 03:02:01 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Pulled Successfully pulled image "registry.internal/payment-api:v1.4.2" in 812ms
+2026-08-30 03:02:02 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Created Created container payment-api
+2026-08-30 03:02:03 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Started Started container payment-api
+2026-08-30 03:02:04 [INFO] payment-api listening on :8080
+2026-08-30 03:02:05 [INFO] payment-api health check ok
+2026-08-30 03:02:06 [FATAL] panic: failed to connect to config store: dial tcp 10.4.0.9:2379: connect: connection refused
+2026-08-30 03:02:07 1 pod/payment-api-7c9f6d8b4d-x2k9p Warning BackOff Back-off restarting failed container
+2026-08-30 03:02:08 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Pulling Pulling image "registry.internal/payment-api:v1.4.2"
+2026-08-30 03:02:09 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Pulled Successfully pulled image "registry.internal/payment-api:v1.4.2" in 812ms
+2026-08-30 03:02:10 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Created Created container payment-api
+2026-08-30 03:02:11 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Started Started container payment-api
+2026-08-30 03:02:12 [INFO] payment-api listening on :8080
+2026-08-30 03:02:13 [INFO] payment-api health check ok
+2026-08-30 03:02:14 [FATAL] panic: failed to connect to config store: dial tcp 10.4.0.9:2379: connect: connection refused
+2026-08-30 03:02:15 1 pod/payment-api-7c9f6d8b4d-x2k9p Warning BackOff Back-off restarting failed container
+2026-08-30 03:02:16 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Pulling Pulling image "registry.internal/payment-api:v1.4.2"
+2026-08-30 03:02:17 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Pulled Successfully pulled image "registry.internal/payment-api:v1.4.2" in 812ms
+2026-08-30 03:02:18 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Created Created container payment-api
+2026-08-30 03:02:19 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Started Started container payment-api
+2026-08-30 03:02:20 [INFO] payment-api listening on :8080
+2026-08-30 03:02:21 [INFO] payment-api health check ok
+2026-08-30 03:02:22 [FATAL] panic: failed to connect to config store: dial tcp 10.4.0.9:2379: connect: connection refused
+2026-08-30 03:02:23 1 pod/payment-api-7c9f6d8b4d-x2k9p Warning BackOff Back-off restarting failed container
+2026-08-30 03:02:24 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Pulling Pulling image "registry.internal/payment-api:v1.4.2"
+2026-08-30 03:02:25 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Pulled Successfully pulled image "registry.internal/payment-api:v1.4.2" in 812ms
+2026-08-30 03:02:26 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Created Created container payment-api
+2026-08-30 03:02:27 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Started Started container payment-api
+2026-08-30 03:02:28 [INFO] payment-api listening on :8080
+2026-08-30 03:02:29 [INFO] payment-api health check ok
+2026-08-30 03:02:30 [FATAL] panic: failed to connect to config store: dial tcp 10.4.0.9:2379: connect: connection refused
+2026-08-30 03:02:31 1 pod/payment-api-7c9f6d8b4d-x2k9p Warning BackOff Back-off restarting failed container
+2026-08-30 03:02:32 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Pulling Pulling image "registry.internal/payment-api:v1.4.2"
+2026-08-30 03:02:33 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Pulled Successfully pulled image "registry.internal/payment-api:v1.4.2" in 812ms
+2026-08-30 03:02:34 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Created Created container payment-api
+2026-08-30 03:02:35 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Started Started container payment-api
+2026-08-30 03:02:36 [INFO] payment-api listening on :8080
+2026-08-30 03:02:37 [INFO] payment-api health check ok
+2026-08-30 03:02:38 [FATAL] panic: failed to connect to config store: dial tcp 10.4.0.9:2379: connect: connection refused
+2026-08-30 03:02:39 1 pod/payment-api-7c9f6d8b4d-x2k9p Warning BackOff Back-off restarting failed container
+2026-08-30 03:02:40 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Pulling Pulling image "registry.internal/payment-api:v1.4.2"
+2026-08-30 03:02:41 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Pulled Successfully pulled image "registry.internal/payment-api:v1.4.2" in 812ms
+2026-08-30 03:02:42 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Created Created container payment-api
+2026-08-30 03:02:43 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Started Started container payment-api
+2026-08-30 03:02:44 [INFO] payment-api listening on :8080
+2026-08-30 03:02:45 [INFO] payment-api health check ok
+2026-08-30 03:02:46 [FATAL] panic: failed to connect to config store: dial tcp 10.4.0.9:2379: connect: connection refused
+2026-08-30 03:02:47 1 pod/payment-api-7c9f6d8b4d-x2k9p Warning BackOff Back-off restarting failed container
+2026-08-30 03:02:48 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Pulling Pulling image "registry.internal/payment-api:v1.4.2"
+2026-08-30 03:02:49 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Pulled Successfully pulled image "registry.internal/payment-api:v1.4.2" in 812ms
+2026-08-30 03:02:50 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Created Created container payment-api
+2026-08-30 03:02:51 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Started Started container payment-api
+2026-08-30 03:02:52 [INFO] payment-api listening on :8080
+2026-08-30 03:02:53 [INFO] payment-api health check ok
+2026-08-30 03:02:54 [FATAL] panic: failed to connect to config store: dial tcp 10.4.0.9:2379: connect: connection refused
+2026-08-30 03:02:55 1 pod/payment-api-7c9f6d8b4d-x2k9p Warning BackOff Back-off restarting failed container
+2026-08-30 03:02:56 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Pulling Pulling image "registry.internal/payment-api:v1.4.2"
+2026-08-30 03:02:57 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Pulled Successfully pulled image "registry.internal/payment-api:v1.4.2" in 812ms
+2026-08-30 03:02:58 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Created Created container payment-api
+2026-08-30 03:02:59 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Started Started container payment-api
+2026-08-30 03:03:00 [INFO] payment-api listening on :8080
+2026-08-30 03:03:01 [INFO] payment-api health check ok
+2026-08-30 03:03:02 [FATAL] panic: failed to connect to config store: dial tcp 10.4.0.9:2379: connect: connection refused
+2026-08-30 03:03:03 1 pod/payment-api-7c9f6d8b4d-x2k9p Warning BackOff Back-off restarting failed container
+2026-08-30 03:03:04 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Pulling Pulling image "registry.internal/payment-api:v1.4.2"
+2026-08-30 03:03:05 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Pulled Successfully pulled image "registry.internal/payment-api:v1.4.2" in 812ms
+2026-08-30 03:03:06 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Created Created container payment-api
+2026-08-30 03:03:07 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Started Started container payment-api
+2026-08-30 03:03:08 [INFO] payment-api listening on :8080
+2026-08-30 03:03:09 [INFO] payment-api health check ok
+2026-08-30 03:03:10 [FATAL] panic: failed to connect to config store: dial tcp 10.4.0.9:2379: connect: connection refused
+2026-08-30 03:03:11 1 pod/payment-api-7c9f6d8b4d-x2k9p Warning BackOff Back-off restarting failed container
+2026-08-30 03:03:12 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Pulling Pulling image "registry.internal/payment-api:v1.4.2"
+2026-08-30 03:03:13 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Pulled Successfully pulled image "registry.internal/payment-api:v1.4.2" in 812ms
+2026-08-30 03:03:14 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Created Created container payment-api
+2026-08-30 03:03:15 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Started Started container payment-api
+2026-08-30 03:03:16 [INFO] payment-api listening on :8080
+2026-08-30 03:03:17 [INFO] payment-api health check ok
+2026-08-30 03:03:18 [FATAL] panic: failed to connect to config store: dial tcp 10.4.0.9:2379: connect: connection refused
+2026-08-30 03:03:19 1 pod/payment-api-7c9f6d8b4d-x2k9p Warning BackOff Back-off restarting failed container
+2026-08-30 03:03:20 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Pulling Pulling image "registry.internal/payment-api:v1.4.2"
+2026-08-30 03:03:21 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Pulled Successfully pulled image "registry.internal/payment-api:v1.4.2" in 812ms
+2026-08-30 03:03:22 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Created Created container payment-api
+2026-08-30 03:03:23 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Started Started container payment-api
+2026-08-30 03:03:24 [INFO] payment-api listening on :8080
+2026-08-30 03:03:25 [INFO] payment-api health check ok
+2026-08-30 03:03:26 [FATAL] panic: failed to connect to config store: dial tcp 10.4.0.9:2379: connect: connection refused
+2026-08-30 03:03:27 1 pod/payment-api-7c9f6d8b4d-x2k9p Warning BackOff Back-off restarting failed container
+2026-08-30 03:03:28 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Pulling Pulling image "registry.internal/payment-api:v1.4.2"
+2026-08-30 03:03:29 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Pulled Successfully pulled image "registry.internal/payment-api:v1.4.2" in 812ms
+2026-08-30 03:03:30 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Created Created container payment-api
+2026-08-30 03:03:31 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Started Started container payment-api
+2026-08-30 03:03:32 [INFO] payment-api listening on :8080
+2026-08-30 03:03:33 [INFO] payment-api health check ok
+2026-08-30 03:03:34 [FATAL] panic: failed to connect to config store: dial tcp 10.4.0.9:2379: connect: connection refused
+2026-08-30 03:03:35 1 pod/payment-api-7c9f6d8b4d-x2k9p Warning BackOff Back-off restarting failed container
+2026-08-30 03:03:36 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Pulling Pulling image "registry.internal/payment-api:v1.4.2"
+2026-08-30 03:03:37 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Pulled Successfully pulled image "registry.internal/payment-api:v1.4.2" in 812ms
+2026-08-30 03:03:38 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Created Created container payment-api
+2026-08-30 03:03:39 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Started Started container payment-api
+2026-08-30 03:03:40 [INFO] payment-api listening on :8080
+2026-08-30 03:03:41 [INFO] payment-api health check ok
+2026-08-30 03:03:42 [FATAL] panic: failed to connect to config store: dial tcp 10.4.0.9:2379: connect: connection refused
+2026-08-30 03:03:43 1 pod/payment-api-7c9f6d8b4d-x2k9p Warning BackOff Back-off restarting failed container
+2026-08-30 03:03:44 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Pulling Pulling image "registry.internal/payment-api:v1.4.2"
+2026-08-30 03:03:45 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Pulled Successfully pulled image "registry.internal/payment-api:v1.4.2" in 812ms
+2026-08-30 03:03:46 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Created Created container payment-api
+2026-08-30 03:03:47 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Started Started container payment-api
+2026-08-30 03:03:48 [INFO] payment-api listening on :8080
+2026-08-30 03:03:49 [INFO] payment-api health check ok
+2026-08-30 03:03:50 [FATAL] panic: failed to connect to config store: dial tcp 10.4.0.9:2379: connect: connection refused
+2026-08-30 03:03:51 1 pod/payment-api-7c9f6d8b4d-x2k9p Warning BackOff Back-off restarting failed container
+2026-08-30 03:03:52 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Pulling Pulling image "registry.internal/payment-api:v1.4.2"
+2026-08-30 03:03:53 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Pulled Successfully pulled image "registry.internal/payment-api:v1.4.2" in 812ms
+2026-08-30 03:03:54 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Created Created container payment-api
+2026-08-30 03:03:55 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Started Started container payment-api
+2026-08-30 03:03:56 [INFO] payment-api listening on :8080
+2026-08-30 03:03:57 [INFO] payment-api health check ok
+2026-08-30 03:03:58 [FATAL] panic: failed to connect to config store: dial tcp 10.4.0.9:2379: connect: connection refused
+2026-08-30 03:03:59 1 pod/payment-api-7c9f6d8b4d-x2k9p Warning BackOff Back-off restarting failed container
+2026-08-30 03:04:00 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Pulling Pulling image "registry.internal/payment-api:v1.4.2"
+2026-08-30 03:04:01 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Pulled Successfully pulled image "registry.internal/payment-api:v1.4.2" in 812ms
+2026-08-30 03:04:02 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Created Created container payment-api
+2026-08-30 03:04:03 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Started Started container payment-api
+2026-08-30 03:04:04 [INFO] payment-api listening on :8080
+2026-08-30 03:04:05 [INFO] payment-api health check ok
+2026-08-30 03:04:06 [FATAL] panic: failed to connect to config store: dial tcp 10.4.0.9:2379: connect: connection refused
+2026-08-30 03:04:07 1 pod/payment-api-7c9f6d8b4d-x2k9p Warning BackOff Back-off restarting failed container
+2026-08-30 03:04:08 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Pulling Pulling image "registry.internal/payment-api:v1.4.2"
+2026-08-30 03:04:09 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Pulled Successfully pulled image "registry.internal/payment-api:v1.4.2" in 812ms
+2026-08-30 03:04:10 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Created Created container payment-api
+2026-08-30 03:04:11 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Started Started container payment-api
+2026-08-30 03:04:12 [INFO] payment-api listening on :8080
+2026-08-30 03:04:13 [INFO] payment-api health check ok
+2026-08-30 03:04:14 [FATAL] panic: failed to connect to config store: dial tcp 10.4.0.9:2379: connect: connection refused
+2026-08-30 03:04:15 1 pod/payment-api-7c9f6d8b4d-x2k9p Warning BackOff Back-off restarting failed container
+2026-08-30 03:04:16 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Pulling Pulling image "registry.internal/payment-api:v1.4.2"
+2026-08-30 03:04:17 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Pulled Successfully pulled image "registry.internal/payment-api:v1.4.2" in 812ms
+2026-08-30 03:04:18 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Created Created container payment-api
+2026-08-30 03:04:19 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Started Started container payment-api
+2026-08-30 03:04:20 [INFO] payment-api listening on :8080
+2026-08-30 03:04:21 [INFO] payment-api health check ok
+2026-08-30 03:04:22 [FATAL] panic: failed to connect to config store: dial tcp 10.4.0.9:2379: connect: connection refused
+2026-08-30 03:04:23 1 pod/payment-api-7c9f6d8b4d-x2k9p Warning BackOff Back-off restarting failed container
+2026-08-30 03:04:24 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Pulling Pulling image "registry.internal/payment-api:v1.4.2"
+2026-08-30 03:04:25 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Pulled Successfully pulled image "registry.internal/payment-api:v1.4.2" in 812ms
+2026-08-30 03:04:26 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Created Created container payment-api
+2026-08-30 03:04:27 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Started Started container payment-api
+2026-08-30 03:04:28 [INFO] payment-api listening on :8080
+2026-08-30 03:04:29 [INFO] payment-api health check ok
+2026-08-30 03:04:30 [FATAL] panic: failed to connect to config store: dial tcp 10.4.0.9:2379: connect: connection refused
+2026-08-30 03:04:31 1 pod/payment-api-7c9f6d8b4d-x2k9p Warning BackOff Back-off restarting failed container
+2026-08-30 03:04:32 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Pulling Pulling image "registry.internal/payment-api:v1.4.2"
+2026-08-30 03:04:33 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Pulled Successfully pulled image "registry.internal/payment-api:v1.4.2" in 812ms
+2026-08-30 03:04:34 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Created Created container payment-api
+2026-08-30 03:04:35 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Started Started container payment-api
+2026-08-30 03:04:36 [INFO] payment-api listening on :8080
+2026-08-30 03:04:37 [INFO] payment-api health check ok
+2026-08-30 03:04:38 [FATAL] panic: failed to connect to config store: dial tcp 10.4.0.9:2379: connect: connection refused
+2026-08-30 03:04:39 1 pod/payment-api-7c9f6d8b4d-x2k9p Warning BackOff Back-off restarting failed container
+2026-08-30 03:04:40 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Pulling Pulling image "registry.internal/payment-api:v1.4.2"
+2026-08-30 03:04:41 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Pulled Successfully pulled image "registry.internal/payment-api:v1.4.2" in 812ms
+2026-08-30 03:04:42 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Created Created container payment-api
+2026-08-30 03:04:43 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Started Started container payment-api
+2026-08-30 03:04:44 [INFO] payment-api listening on :8080
+2026-08-30 03:04:45 [INFO] payment-api health check ok
+2026-08-30 03:04:46 [FATAL] panic: failed to connect to config store: dial tcp 10.4.0.9:2379: connect: connection refused
+2026-08-30 03:04:47 1 pod/payment-api-7c9f6d8b4d-x2k9p Warning BackOff Back-off restarting failed container
+2026-08-30 03:04:48 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Pulling Pulling image "registry.internal/payment-api:v1.4.2"
+2026-08-30 03:04:49 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Pulled Successfully pulled image "registry.internal/payment-api:v1.4.2" in 812ms
+2026-08-30 03:04:50 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Created Created container payment-api
+2026-08-30 03:04:51 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Started Started container payment-api
+2026-08-30 03:04:52 [INFO] payment-api listening on :8080
+2026-08-30 03:04:53 [INFO] payment-api health check ok
+2026-08-30 03:04:54 [FATAL] panic: failed to connect to config store: dial tcp 10.4.0.9:2379: connect: connection refused
+2026-08-30 03:04:55 1 pod/payment-api-7c9f6d8b4d-x2k9p Warning BackOff Back-off restarting failed container
+2026-08-30 03:04:56 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Pulling Pulling image "registry.internal/payment-api:v1.4.2"
+2026-08-30 03:04:57 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Pulled Successfully pulled image "registry.internal/payment-api:v1.4.2" in 812ms
+2026-08-30 03:04:58 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Created Created container payment-api
+2026-08-30 03:04:59 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Started Started container payment-api
+2026-08-30 03:05:00 [INFO] payment-api listening on :8080
+2026-08-30 03:05:01 [INFO] payment-api health check ok
+2026-08-30 03:05:02 [FATAL] panic: failed to connect to config store: dial tcp 10.4.0.9:2379: connect: connection refused
+2026-08-30 03:05:03 1 pod/payment-api-7c9f6d8b4d-x2k9p Warning BackOff Back-off restarting failed container
+2026-08-30 03:05:04 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Pulling Pulling image "registry.internal/payment-api:v1.4.2"
+2026-08-30 03:05:05 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Pulled Successfully pulled image "registry.internal/payment-api:v1.4.2" in 812ms
+2026-08-30 03:05:06 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Created Created container payment-api
+2026-08-30 03:05:07 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Started Started container payment-api
+2026-08-30 03:05:08 [INFO] payment-api listening on :8080
+2026-08-30 03:05:09 [INFO] payment-api health check ok
+2026-08-30 03:05:10 [FATAL] panic: failed to connect to config store: dial tcp 10.4.0.9:2379: connect: connection refused
+2026-08-30 03:05:11 1 pod/payment-api-7c9f6d8b4d-x2k9p Warning BackOff Back-off restarting failed container
+2026-08-30 03:05:12 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Pulling Pulling image "registry.internal/payment-api:v1.4.2"
+2026-08-30 03:05:13 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Pulled Successfully pulled image "registry.internal/payment-api:v1.4.2" in 812ms
+2026-08-30 03:05:14 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Created Created container payment-api
+2026-08-30 03:05:15 1 pod/payment-api-7c9f6d8b4d-x2k9p Normal Started Started container payment-api
+2026-08-30 03:05:16 [INFO] payment-api listening on :8080
+2026-08-30 03:05:17 [INFO] payment-api health check ok
+2026-08-30 03:05:18 [FATAL] panic: failed to connect to config store: dial tcp 10.4.0.9:2379: connect: connection refused
+2026-08-30 03:05:19 1 pod/payment-api-7c9f6d8b4d-x2k9p Warning BackOff Back-off restarting failed container
+2026-08-30 03:05:20 1 pod/payment-api-7c9f6d8b4d-x2k9p Warning Unhealthy Readiness probe failed: dial tcp 10.4.2.11:8080: connect: connection refused (CrashLoopBackOff after 40 restarts)

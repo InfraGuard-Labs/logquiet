@@ -1,0 +1,9 @@
+{
+  "scenario": "healthy-noisy-service-then-fatal",
+  "synthetic": true,
+  "total_lines": 2001,
+  "known_important_substrings": [
+    "out of memory: cannot allocate 512MB"
+  ],
+  "description": "2000 lines of routine, moderately diverse background chatter ending in a single fatal OOM kill."
+}

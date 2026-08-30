@@ -1,0 +1,9 @@
+{
+  "scenario": "http-service-failure",
+  "synthetic": true,
+  "total_lines": 521,
+  "known_important_substrings": [
+    "upstream connect error or disconnect/reset before headers"
+  ],
+  "description": "Nginx/Envoy-style access log: healthy 200s, a burst of 503s, then an explicit upstream connect failure."
+}
