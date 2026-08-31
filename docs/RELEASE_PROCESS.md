@@ -26,6 +26,16 @@ for `v1.0.0` is: a period of real external usage with no critical defects
 reported, plus whatever flag/schema changes that usage motivates, made
 *before* the API is declared stable.
 
+## Artifact/source traceability
+
+Published binaries must be built from the exact commit the version tag
+points at - not from an earlier or later point on `main` - otherwise the
+published artifact silently drifts from the source it claims to represent.
+[RELEASE_BUILD_RECORD.md](RELEASE_BUILD_RECORD.md) records, for each real
+local build of the release artifacts, the source commit, Go version, build
+flags, target platforms, and SHA256 hashes actually produced, so that
+relationship is checkable rather than assumed.
+
 ## Release checklist
 
 1. Ensure `main` is green: `go build ./...`, `go vet ./...`, `go test
