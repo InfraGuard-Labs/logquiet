@@ -144,6 +144,89 @@ func TestMultilineTracebackStaysGrouped(t *testing.T) {
 	}
 }
 
+// TestRawLineCountsAlwaysSumToInputLines is the correctness invariant for
+// the raw-line suppression metric: every physical input line ends up in
+// exactly one completed multiline block, and that block contributes its
+// full line count to exactly one of DisplayedRawLines/SuppressedRawLines -
+// never both, never neither - so the two must always sum to InputLines.
+func TestRawLineCountsAlwaysSumToInputLines(t *testing.T) {
+	p, _ := newTestPipeline(false)
+	now := time.Unix(0, 0)
+	lines := []string{
+		`2026-08-30 03:01:00 [INFO] processed order 100000 in 23ms`,
+		`2026-08-30 03:01:01 [INFO] processed order 100001 in 19ms`,
+		`2026-08-30 03:01:02 [INFO] processed order 100002 in 21ms`,
+		`2026-08-30 03:01:07 [ERROR] Traceback (most recent call last):`,
+		`2026-08-30 03:01:07 [ERROR]   File "/app/db.py", line 42, in execute_query`,
+		`2026-08-30 03:01:07 [ERROR]     raise TimeoutError("DB connection lost")`,
+		`2026-08-30 03:01:07 [ERROR] TimeoutError: DB connection lost`,
+		`2026-08-30 03:01:08 [INFO] processed order 100003 in 25ms`,
+	}
+	for _, l := range lines {
+		now = now.Add(1 * time.Millisecond)
+		p.ProcessLine(l, now)
+	}
+	p.Finish(now)
+
+	c := p.Counters
+	if c.InputLines != uint64(len(lines)) {
+		t.Fatalf("InputLines = %d, want %d", c.InputLines, len(lines))
+	}
+	if got := c.DisplayedRawLines + c.SuppressedRawLines; got != c.InputLines {
+		t.Fatalf("DisplayedRawLines(%d) + SuppressedRawLines(%d) = %d, want InputLines = %d",
+			c.DisplayedRawLines, c.SuppressedRawLines, got, c.InputLines)
+	}
+}
+
+// TestRawLineSuppressionDiffersFromLogicalEventSuppression is the
+// regression test proving the two metrics are genuinely different numbers
+// when a multiline block is involved, not just differently-named aliases
+// for the same computation - which is the entire reason both are exposed.
+func TestRawLineSuppressionDiffersFromLogicalEventSuppression(t *testing.T) {
+	p, _ := newTestPipeline(false)
+	now := time.Unix(0, 0)
+	// 1 novel single-line event, 1 novel 4-line traceback event, then 3
+	// suppressed repeats of the single-line pattern.
+	lines := []string{
+		`2026-08-30 03:01:00 [INFO] processed order 100000 in 23ms`,
+		`2026-08-30 03:01:07 [ERROR] Traceback (most recent call last):`,
+		`2026-08-30 03:01:07 [ERROR]   File "/app/db.py", line 42, in execute_query`,
+		`2026-08-30 03:01:07 [ERROR]     raise TimeoutError("DB connection lost")`,
+		`2026-08-30 03:01:07 [ERROR] TimeoutError: DB connection lost`,
+		`2026-08-30 03:01:01 [INFO] processed order 100001 in 19ms`,
+		`2026-08-30 03:01:02 [INFO] processed order 100002 in 21ms`,
+		`2026-08-30 03:01:03 [INFO] processed order 100003 in 25ms`,
+	}
+	for _, l := range lines {
+		now = now.Add(1 * time.Millisecond)
+		p.ProcessLine(l, now)
+	}
+	p.Finish(now)
+
+	snap := p.Counters.Snapshot(now, p.PatternCount(), p.PatternsEvicted())
+
+	// Logical events: 2 displayed (the INFO line, the traceback) + 3
+	// suppressed (repeats) = 5 total -> 60% suppressed.
+	if snap.DisplayedEvents != 2 || snap.SuppressedEvents != 3 {
+		t.Fatalf("expected 2 displayed / 3 suppressed logical events, got %d/%d", snap.DisplayedEvents, snap.SuppressedEvents)
+	}
+	// Raw lines: displayed = 1 (INFO) + 4 (traceback) = 5; suppressed = 3;
+	// total = 8 -> 37.5% suppressed. Deliberately different from the
+	// logical-event figure above.
+	if snap.DisplayedRawLines != 5 || snap.SuppressedRawLines != 3 {
+		t.Fatalf("expected 5 displayed / 3 suppressed raw lines, got %d/%d", snap.DisplayedRawLines, snap.SuppressedRawLines)
+	}
+	if snap.LogicalEventSuppressionPercent == snap.RawLineSuppressionPercent {
+		t.Fatalf("expected the two suppression metrics to differ given a multiline block, both were %.2f%%", snap.LogicalEventSuppressionPercent)
+	}
+	if snap.RawLineSuppressionPercent != 37.5 {
+		t.Fatalf("RawLineSuppressionPercent = %.2f, want 37.5", snap.RawLineSuppressionPercent)
+	}
+	if snap.LogicalEventSuppressionPercent != 60 {
+		t.Fatalf("LogicalEventSuppressionPercent = %.2f, want 60", snap.LogicalEventSuppressionPercent)
+	}
+}
+
 // TestFrequencySpikeIsSurfacedNotSuppressed reproduces the spec's critical
 // safety scenario: a rare error suddenly firing hundreds of times per
 // minute must trigger a visible anomaly rather than being silently

@@ -5,13 +5,14 @@
     "input_lines": 551,
     "displayed_events": 3,
     "suppressed_events": 548,
-    "suppression_percentage": 99.46,
+    "logical_event_suppression_percentage": 99.46,
+    "raw_line_suppression_percentage": 99.46,
     "structural_patterns": 3,
     "known_important_total": 1,
     "known_important_retained": 1,
     "missed": null,
-    "throughput_lines_per_second": 11089.263540071284,
-    "elapsed_seconds": 0.0496877
+    "throughput_lines_per_second": 9207.964638741969,
+    "elapsed_seconds": 0.0598395
   },
   {
     "scenario": "ci-deployment-failure",
@@ -19,13 +20,14 @@
     "input_lines": 105,
     "displayed_events": 16,
     "suppressed_events": 89,
-    "suppression_percentage": 84.76,
+    "logical_event_suppression_percentage": 84.76,
+    "raw_line_suppression_percentage": 84.76,
     "structural_patterns": 16,
     "known_important_total": 2,
     "known_important_retained": 2,
     "missed": null,
-    "throughput_lines_per_second": 27073.019801980197,
-    "elapsed_seconds": 0.0038784
+    "throughput_lines_per_second": 26554.043801527492,
+    "elapsed_seconds": 0.0039542
   },
   {
     "scenario": "database-connection-exhaustion",
@@ -33,13 +35,14 @@
     "input_lines": 337,
     "displayed_events": 6,
     "suppressed_events": 328,
-    "suppression_percentage": 98.2,
+    "logical_event_suppression_percentage": 98.2,
+    "raw_line_suppression_percentage": 97.33,
     "structural_patterns": 6,
     "known_important_total": 2,
     "known_important_retained": 2,
     "missed": null,
-    "throughput_lines_per_second": 22197.04654134447,
-    "elapsed_seconds": 0.0151822
+    "throughput_lines_per_second": 15918.07622727423,
+    "elapsed_seconds": 0.0211709
   },
   {
     "scenario": "go-panic",
@@ -47,13 +50,14 @@
     "input_lines": 138,
     "displayed_events": 2,
     "suppressed_events": 129,
-    "suppression_percentage": 98.47,
+    "logical_event_suppression_percentage": 98.47,
+    "raw_line_suppression_percentage": 93.48,
     "structural_patterns": 2,
     "known_important_total": 1,
     "known_important_retained": 1,
     "missed": null,
-    "throughput_lines_per_second": 8943.210612609926,
-    "elapsed_seconds": 0.0154307
+    "throughput_lines_per_second": 12786.301979097176,
+    "elapsed_seconds": 0.0107928
   },
   {
     "scenario": "healthy-noisy-service-then-fatal",
@@ -61,13 +65,14 @@
     "input_lines": 2001,
     "displayed_events": 5,
     "suppressed_events": 1996,
-    "suppression_percentage": 99.75,
+    "logical_event_suppression_percentage": 99.75,
+    "raw_line_suppression_percentage": 99.75,
     "structural_patterns": 5,
     "known_important_total": 1,
     "known_important_retained": 1,
     "missed": null,
-    "throughput_lines_per_second": 33519.88997569347,
-    "elapsed_seconds": 0.0596959
+    "throughput_lines_per_second": 11316.45234591584,
+    "elapsed_seconds": 0.1768222
   },
   {
     "scenario": "http-service-failure",
@@ -75,13 +80,14 @@
     "input_lines": 521,
     "displayed_events": 5,
     "suppressed_events": 516,
-    "suppression_percentage": 99.04,
+    "logical_event_suppression_percentage": 99.04,
+    "raw_line_suppression_percentage": 99.04,
     "structural_patterns": 5,
     "known_important_total": 1,
     "known_important_retained": 1,
     "missed": null,
-    "throughput_lines_per_second": 10777.244086995735,
-    "elapsed_seconds": 0.0483426
+    "throughput_lines_per_second": 5166.410990473377,
+    "elapsed_seconds": 0.1008437
   },
   {
     "scenario": "java-exception",
@@ -89,13 +95,14 @@
     "input_lines": 237,
     "displayed_events": 2,
     "suppressed_events": 229,
-    "suppression_percentage": 99.13,
+    "logical_event_suppression_percentage": 99.13,
+    "raw_line_suppression_percentage": 96.62,
     "structural_patterns": 2,
     "known_important_total": 2,
     "known_important_retained": 2,
     "missed": null,
-    "throughput_lines_per_second": 16700.843498298207,
-    "elapsed_seconds": 0.0141909
+    "throughput_lines_per_second": 9209.892279234607,
+    "elapsed_seconds": 0.0257332
   },
   {
     "scenario": "kubernetes-pod-restart-loop",
@@ -103,13 +110,14 @@
     "input_lines": 321,
     "displayed_events": 10,
     "suppressed_events": 311,
-    "suppression_percentage": 96.88,
+    "logical_event_suppression_percentage": 96.88,
+    "raw_line_suppression_percentage": 96.88,
     "structural_patterns": 9,
     "known_important_total": 2,
     "known_important_retained": 2,
     "missed": null,
-    "throughput_lines_per_second": 10673.813577356885,
-    "elapsed_seconds": 0.0300736
+    "throughput_lines_per_second": 7910.164191352047,
+    "elapsed_seconds": 0.0405807
   },
   {
     "scenario": "nodejs-exception",
@@ -117,13 +125,14 @@
     "input_lines": 194,
     "displayed_events": 2,
     "suppressed_events": 189,
-    "suppression_percentage": 98.95,
+    "logical_event_suppression_percentage": 98.95,
+    "raw_line_suppression_percentage": 97.42,
     "structural_patterns": 2,
     "known_important_total": 1,
     "known_important_retained": 1,
     "missed": null,
-    "throughput_lines_per_second": 18956.790244093103,
-    "elapsed_seconds": 0.0102338
+    "throughput_lines_per_second": 11048.591019887464,
+    "elapsed_seconds": 0.0175588
   },
   {
     "scenario": "python-traceback",
@@ -131,12 +140,13 @@
     "input_lines": 196,
     "displayed_events": 2,
     "suppressed_events": 189,
-    "suppression_percentage": 98.95,
+    "logical_event_suppression_percentage": 98.95,
+    "raw_line_suppression_percentage": 96.43,
     "structural_patterns": 2,
     "known_important_total": 1,
     "known_important_retained": 1,
     "missed": null,
-    "throughput_lines_per_second": 40299.36672423719,
-    "elapsed_seconds": 0.0048636
+    "throughput_lines_per_second": 18313.991515763115,
+    "elapsed_seconds": 0.0107022
   }
 ]

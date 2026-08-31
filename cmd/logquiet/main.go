@@ -153,22 +153,27 @@ func isTerminal(f *os.File) bool {
 func printStats(w *os.File, pl *pipeline.Pipeline, now time.Time) {
 	snap := pl.Counters.Snapshot(now, pl.PatternCount(), pl.PatternsEvicted())
 	fmt.Fprintf(w, "\n--- logquiet stats ---\n")
-	fmt.Fprintf(w, "%-25s %d\n", "input lines:", snap.InputLines)
-	fmt.Fprintf(w, "%-25s %d\n", "displayed events:", snap.DisplayedEvents)
-	fmt.Fprintf(w, "%-25s %d\n", "suppressed events:", snap.SuppressedEvents)
-	fmt.Fprintf(w, "%-25s %.1f%%\n", "suppression:", snap.SuppressionPercent)
-	fmt.Fprintf(w, "%-25s %d (evicted %d)\n", "structural patterns:", snap.StructuralPatterns, snap.PatternsEvicted)
+	fmt.Fprintf(w, "%-27s %d\n", "input lines:", snap.InputLines)
+	fmt.Fprintf(w, "%-27s %d\n", "displayed events:", snap.DisplayedEvents)
+	fmt.Fprintf(w, "%-27s %d\n", "suppressed events:", snap.SuppressedEvents)
+	fmt.Fprintf(w, "%-27s %.1f%%\n", "logical-event suppression:", snap.LogicalEventSuppressionPercent)
+	// Distinct from the line above: this counts actual raw physical lines,
+	// including every line of a collapsed multiline block, not just the
+	// block itself - see docs/IMPACT_REPORT.md "Physical lines vs. logical
+	// events" for why the two numbers legitimately differ.
+	fmt.Fprintf(w, "%-27s %.1f%%\n", "raw-line suppression:", snap.RawLineSuppressionPercent)
+	fmt.Fprintf(w, "%-27s %d (evicted %d)\n", "structural patterns:", snap.StructuralPatterns, snap.PatternsEvicted)
 	// "observed", not "surfaced" or "displayed": these count every WARN/
 	// ERROR+ occurrence seen in the input, including ones collapsed into a
 	// repeat counter rather than shown individually - see
 	// docs/IMPACT_REPORT.md for the precise definition.
-	fmt.Fprintf(w, "%-25s %d\n", "warning events observed:", snap.WarningEvents)
-	fmt.Fprintf(w, "%-25s %d\n", "error events observed:", snap.ErrorEvents)
-	fmt.Fprintf(w, "%-25s %d\n", "anomalies detected:", snap.AnomalyEvents)
-	fmt.Fprintf(w, "%-25s %d\n", "truncated lines:", snap.TruncatedLines)
-	fmt.Fprintf(w, "%-25s %.2fs\n", "elapsed:", snap.ElapsedSeconds)
-	fmt.Fprintf(w, "%-25s %.0f lines/sec, %.2f MB/sec\n", "rate:", snap.LinesPerSecond, snap.MBPerSecond)
-	fmt.Fprintf(w, "%-25s %.1f MB\n", "approx memory:", snap.ApproxMemoryMB)
+	fmt.Fprintf(w, "%-27s %d\n", "warning events observed:", snap.WarningEvents)
+	fmt.Fprintf(w, "%-27s %d\n", "error events observed:", snap.ErrorEvents)
+	fmt.Fprintf(w, "%-27s %d\n", "anomalies detected:", snap.AnomalyEvents)
+	fmt.Fprintf(w, "%-27s %d\n", "truncated lines:", snap.TruncatedLines)
+	fmt.Fprintf(w, "%-27s %.2fs\n", "elapsed:", snap.ElapsedSeconds)
+	fmt.Fprintf(w, "%-27s %.0f lines/sec, %.2f MB/sec\n", "rate:", snap.LinesPerSecond, snap.MBPerSecond)
+	fmt.Fprintf(w, "%-27s %.1f MB\n", "approx memory:", snap.ApproxMemoryMB)
 }
 
 func writeImpactReport(path string, pl *pipeline.Pipeline, now time.Time) error {

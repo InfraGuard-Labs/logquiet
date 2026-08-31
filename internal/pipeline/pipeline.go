@@ -31,6 +31,9 @@ type Pipeline struct {
 // New constructs a Pipeline from a resolved Config and a Renderer that has
 // already been configured for the correct output mode.
 func New(cfg config.Config, r *render.Renderer) *Pipeline {
+	// cfg.WindowSeconds is already validated to be > 0 by config.Parse; the
+	// rounding below is quantizing a valid-but-sub-bucket-granularity value
+	// (e.g. -window 2) up to one whole bucket, not tolerating bad input.
 	pcfg := pattern.DefaultConfig()
 	windowSeconds := cfg.WindowSeconds
 	if windowSeconds < 5 {
@@ -100,10 +103,19 @@ func (p *Pipeline) handleBlock(block multiline.Block, now time.Time) {
 		p.Counters.ErrorEvents++
 	}
 
+	// rawLines is how many actual physical input lines this block spans -
+	// 1 for an ordinary single-line event, more for a multiline block
+	// (e.g. a stack trace). Attributing this count to Displayed/
+	// SuppressedRawLines (rather than just counting the block once) is
+	// what makes RawLineSuppressionPercent a true raw-line figure instead
+	// of another logical-event count in disguise.
+	rawLines := uint64(len(block.Lines))
+
 	switch {
 	case spike != nil:
 		p.Counters.AnomalyEvents++
 		p.Counters.DisplayedEvents++
+		p.Counters.DisplayedRawLines += rawLines
 		p.renderer.EmitAnomaly(render.Anomaly{
 			Fingerprint:    fp,
 			Severity:       lvl,
@@ -116,6 +128,7 @@ func (p *Pipeline) handleBlock(block multiline.Block, now time.Time) {
 
 	case isNew:
 		p.Counters.DisplayedEvents++
+		p.Counters.DisplayedRawLines += rawLines
 		p.renderer.Emit(render.Event{
 			Fingerprint: fp,
 			Severity:    lvl,
@@ -126,6 +139,7 @@ func (p *Pipeline) handleBlock(block multiline.Block, now time.Time) {
 
 	default:
 		p.Counters.SuppressedEvents++
+		p.Counters.SuppressedRawLines += rawLines
 		p.renderer.Accumulate(fp, lvl, template, now)
 	}
 }

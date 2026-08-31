@@ -111,9 +111,12 @@ renderer's pending counters).
 - **Plain** (`--plain`, or automatically when stdout is not a terminal):
   no color, no cursor control.
 - **No-color** (`--no-color`): like TTY but without ANSI color codes.
-- **JSON** (`--json`): newline-delimited JSON, one object per decision
-  (`event`, `repeat_summary`, `repeat_final`, `anomaly`) - see the README
-  for the field reference.
+- **JSON** (`--json`): newline-delimited JSON. The three stable `type`
+  values are `event`, `repeat_summary`, and `anomaly` - a `repeat_summary`
+  is emitted both for periodic flushes during a long-running stream and
+  for the final flush of a pattern's count at EOF/shutdown; there is no
+  separate event type for the latter. See the README for the field
+  reference.
 
 TTY detection is done with the standard-library-only check
 `(os.Stdout.Stat().Mode() & os.ModeCharDevice) != 0`, requiring no

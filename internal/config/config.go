@@ -7,6 +7,7 @@ import (
 	"flag"
 	"fmt"
 	"io"
+	"math"
 	"strings"
 	"time"
 
@@ -56,8 +57,8 @@ func Parse(args []string, out io.Writer) (Config, error) {
 	fs := flag.NewFlagSet("logquiet", flag.ContinueOnError)
 	fs.SetOutput(out)
 
-	fs.BoolVar(&cfg.Plain, "plain", false, "plain-text output: no ANSI color or in-place cursor updates (auto-enabled when stdout is not a terminal)")
-	fs.BoolVar(&cfg.NoColor, "no-color", false, "disable ANSI color, keep live in-place counter updates if stdout is a terminal")
+	fs.BoolVar(&cfg.Plain, "plain", false, "plain-text output: no ANSI color, for pipes/CI/saved files (auto-enabled when stdout is not a terminal)")
+	fs.BoolVar(&cfg.NoColor, "no-color", false, "disable ANSI color only; periodic repeat summaries are shown either way")
 	fs.BoolVar(&cfg.Color, "color", false, "force ANSI color even when stdout is not a terminal (e.g. piping through `less -R`, or capturing colored output to a file); -no-color still wins if both are given")
 	fs.BoolVar(&cfg.JSON, "json", false, "emit newline-delimited JSON events instead of human-formatted text")
 	fs.BoolVar(&cfg.Stats, "stats", false, "print a summary of processing statistics to stderr when the stream ends")
@@ -94,7 +95,54 @@ func Parse(args []string, out io.Writer) (Config, error) {
 		cfg.InputFile = rest[0]
 	}
 
+	if err := validate(cfg); err != nil {
+		return cfg, err
+	}
+
 	return cfg, nil
+}
+
+// validate rejects nonsensical numeric configuration outright rather than
+// silently clamping it into something "safe" - a value like
+// -max-patterns 0 or -spike-multiplier -1 is a user mistake, not a
+// tuning choice, and running with a silently-substituted value would
+// produce behavior the user did not ask for and might not notice.
+func validate(cfg Config) error {
+	if cfg.MaxPatterns <= 0 {
+		return fmt.Errorf("invalid -max-patterns value %d: must be greater than 0", cfg.MaxPatterns)
+	}
+	if cfg.WindowSeconds <= 0 {
+		return fmt.Errorf("invalid -window value %d: must be greater than 0 (seconds)", cfg.WindowSeconds)
+	}
+	if cfg.MinWindowEvents <= 0 {
+		return fmt.Errorf("invalid -min-window-events value %d: must be greater than 0", cfg.MinWindowEvents)
+	}
+	if cfg.CooldownSeconds < 0 {
+		return fmt.Errorf("invalid -cooldown value %d: must be 0 or greater (seconds); 0 means no cooldown between alerts", cfg.CooldownSeconds)
+	}
+	if err := validateMultiplier("-spike-multiplier", cfg.SpikeMultiplier); err != nil {
+		return err
+	}
+	if err := validateMultiplier("-protect-spike-multiplier", cfg.ProtectMultiplier); err != nil {
+		return err
+	}
+	return nil
+}
+
+// validateMultiplier checks a spike-multiplier-shaped flag: it gates
+// "current rate > baseline rate * multiplier", so a multiplier at or below
+// 1 would flag any rate that merely equals or exceeds baseline as a
+// "spike", which is not what a spike-detection threshold means, and NaN/Inf
+// (both of which flag.Float64Var will happily parse from a command line
+// like "-spike-multiplier NaN") would make the comparison meaningless.
+func validateMultiplier(flagName string, v float64) error {
+	if math.IsNaN(v) || math.IsInf(v, 0) {
+		return fmt.Errorf("invalid %s value %v: must be a finite number greater than 1", flagName, v)
+	}
+	if v <= 1 {
+		return fmt.Errorf("invalid %s value %v: must be greater than 1 (a spike must exceed baseline, not merely match it)", flagName, v)
+	}
+	return nil
 }
 
 func parseLevel(s string) (severity.Level, bool) {
@@ -138,8 +186,9 @@ EXAMPLES
 
 LogQuiet reads a log stream, structurally normalizes each line (timestamps,
 UUIDs, IPs, IDs, durations, and similar variable data become placeholders),
-collapses routine repetition into a live counter, and always surfaces new,
-error-level, or anomalously-frequent events. No configuration is required.
+collapses routine repetition into periodic compact repeat summaries, and
+always surfaces new, error-level, or anomalously-frequent events. No
+configuration is required.
 
 FLAGS
 `)

@@ -32,18 +32,24 @@ type manifest struct {
 }
 
 type result struct {
-	Scenario           string   `json:"scenario"`
-	File               string   `json:"file"`
-	InputLines         uint64   `json:"input_lines"`
-	DisplayedEvents    uint64   `json:"displayed_events"`
-	SuppressedEvents   uint64   `json:"suppressed_events"`
-	SuppressionPercent float64  `json:"suppression_percentage"`
-	StructuralPatterns int      `json:"structural_patterns"`
-	KnownImportant     int      `json:"known_important_total"`
-	Retained           int      `json:"known_important_retained"`
-	Missed             []string `json:"missed"`
-	ThroughputLPS      float64  `json:"throughput_lines_per_second"`
-	ElapsedSeconds     float64  `json:"elapsed_seconds"`
+	Scenario        string `json:"scenario"`
+	File            string `json:"file"`
+	InputLines      uint64 `json:"input_lines"`
+	DisplayedEvents uint64 `json:"displayed_events"`
+	// LogicalEventSuppressionPercent: fraction of logical events (after
+	// multiline assembly) collapsed into a repeat counter - not a raw
+	// physical-line reduction figure. See docs/IMPACT_REPORT.md.
+	SuppressedEvents               uint64  `json:"suppressed_events"`
+	LogicalEventSuppressionPercent float64 `json:"logical_event_suppression_percentage"`
+	// RawLineSuppressionPercent: the true fraction of raw physical lines
+	// not individually displayed. See docs/IMPACT_REPORT.md.
+	RawLineSuppressionPercent float64  `json:"raw_line_suppression_percentage"`
+	StructuralPatterns        int      `json:"structural_patterns"`
+	KnownImportant            int      `json:"known_important_total"`
+	Retained                  int      `json:"known_important_retained"`
+	Missed                    []string `json:"missed"`
+	ThroughputLPS             float64  `json:"throughput_lines_per_second"`
+	ElapsedSeconds            float64  `json:"elapsed_seconds"`
 }
 
 func main() {
@@ -135,28 +141,29 @@ func runOne(manifestPath string) (result, error) {
 	}
 
 	return result{
-		Scenario:           m.Scenario,
-		File:               filepath.Base(logPath),
-		InputLines:         snap.InputLines,
-		DisplayedEvents:    snap.DisplayedEvents,
-		SuppressedEvents:   snap.SuppressedEvents,
-		SuppressionPercent: snap.SuppressionPercent,
-		StructuralPatterns: snap.StructuralPatterns,
-		KnownImportant:     len(m.KnownImportant),
-		Retained:           retained,
-		Missed:             missed,
-		ThroughputLPS:      float64(snap.InputLines) / elapsed,
-		ElapsedSeconds:     elapsed,
+		Scenario:                       m.Scenario,
+		File:                           filepath.Base(logPath),
+		InputLines:                     snap.InputLines,
+		DisplayedEvents:                snap.DisplayedEvents,
+		SuppressedEvents:               snap.SuppressedEvents,
+		LogicalEventSuppressionPercent: snap.LogicalEventSuppressionPercent,
+		RawLineSuppressionPercent:      snap.RawLineSuppressionPercent,
+		StructuralPatterns:             snap.StructuralPatterns,
+		KnownImportant:                 len(m.KnownImportant),
+		Retained:                       retained,
+		Missed:                         missed,
+		ThroughputLPS:                  float64(snap.InputLines) / elapsed,
+		ElapsedSeconds:                 elapsed,
 	}, nil
 }
 
 func printReport(results []result) {
-	fmt.Printf("%-32s %10s %10s %10s %8s %8s %10s\n",
-		"scenario", "lines", "displayed", "suppress%", "patterns", "retained", "lines/sec")
+	fmt.Printf("%-32s %10s %10s %14s %11s %8s %8s %10s\n",
+		"scenario", "lines", "displayed", "logical-suppr%", "raw-line-suppr%", "patterns", "retained", "lines/sec")
 	for _, r := range results {
 		retainedStr := fmt.Sprintf("%d/%d", r.Retained, r.KnownImportant)
-		fmt.Printf("%-32s %10d %10d %9.1f%% %8d %8s %10.0f\n",
-			r.Scenario, r.InputLines, r.DisplayedEvents, r.SuppressionPercent, r.StructuralPatterns, retainedStr, r.ThroughputLPS)
+		fmt.Printf("%-32s %10d %10d %13.1f%% %10.1f%% %8d %8s %10.0f\n",
+			r.Scenario, r.InputLines, r.DisplayedEvents, r.LogicalEventSuppressionPercent, r.RawLineSuppressionPercent, r.StructuralPatterns, retainedStr, r.ThroughputLPS)
 		if len(r.Missed) > 0 {
 			for _, m := range r.Missed {
 				fmt.Printf("    MISSED: %q\n", m)

@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"errors"
 	"io"
+	"os"
 	"sync"
 	"testing"
 	"time"
@@ -12,6 +13,68 @@ import (
 	"github.com/azimsiddiqui/logquiet/internal/pipeline"
 	"github.com/azimsiddiqui/logquiet/internal/render"
 )
+
+// emptyStdin returns a real *os.File at EOF, since run() requires *os.File
+// (not just an io.Reader) for stdin/stdout/stderr.
+func emptyStdin(t *testing.T) *os.File {
+	t.Helper()
+	r, w, err := os.Pipe()
+	if err != nil {
+		t.Fatalf("os.Pipe: %v", err)
+	}
+	if err := w.Close(); err != nil {
+		t.Fatalf("closing pipe writer: %v", err)
+	}
+	t.Cleanup(func() { r.Close() })
+	return r
+}
+
+// captureFile returns a real *os.File backed by a temp file, and a func
+// that reads back everything written to it.
+func captureFile(t *testing.T) (*os.File, func() string) {
+	t.Helper()
+	f, err := os.CreateTemp(t.TempDir(), "capture")
+	if err != nil {
+		t.Fatalf("CreateTemp: %v", err)
+	}
+	t.Cleanup(func() { f.Close() })
+	return f, func() string {
+		b, _ := os.ReadFile(f.Name())
+		return string(b)
+	}
+}
+
+// TestRunRejectsInvalidNumericFlags is the end-to-end version of the
+// config-package validation tests: it exercises the actual process entry
+// point, confirming invalid flags cannot run normally - they must exit
+// non-zero (specifically 2, the CLI usage/configuration error code) with a
+// useful message on stderr, not silently proceed with a substituted value.
+func TestRunRejectsInvalidNumericFlags(t *testing.T) {
+	cases := [][]string{
+		{"--max-patterns", "0"},
+		{"--max-patterns", "-1"},
+		{"--spike-multiplier", "-1"},
+	}
+	for _, args := range cases {
+		t.Run(args[0]+"="+args[1], func(t *testing.T) {
+			stdin := emptyStdin(t)
+			stdout, readStdout := captureFile(t)
+			stderr, readStderr := captureFile(t)
+
+			code := run(args, stdin, stdout, stderr)
+
+			if code != 2 {
+				t.Fatalf("run(%v) exit code = %d, want 2", args, code)
+			}
+			if readStdout() != "" {
+				t.Fatalf("run(%v) wrote to stdout, want nothing: %q", args, readStdout())
+			}
+			if readStderr() == "" {
+				t.Fatalf("run(%v) wrote nothing to stderr, want a useful error message", args)
+			}
+		})
+	}
+}
 
 // errReader yields data then a caller-supplied error instead of io.EOF,
 // simulating a genuine read failure (a disk error, a device going away, a

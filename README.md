@@ -260,7 +260,7 @@ Real captured output for a buried Python traceback (reproduce with
 | `--plain` | No color, no cursor control - for pipes, CI, and saved files |
 | `--no-color` | Like the default, minus ANSI color codes |
 | `--color` | Force ANSI color even when not attached to a terminal (piping through `less -R`, capturing colored output) - `--no-color` wins if both are given |
-| `--json` | Newline-delimited JSON, one object per decision (`event`, `repeat_summary`, `repeat_final`, `anomaly`) |
+| `--json` | Newline-delimited JSON, one object per decision. Three stable `type` values: `event` (a novel pattern shown in full), `repeat_summary` (a periodic or final flush of a pattern's repeat count - the same type either way), and `anomaly` (a frequency-spike banner). |
 
 ## Statistics and impact reports
 

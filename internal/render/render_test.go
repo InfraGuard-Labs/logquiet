@@ -143,6 +143,61 @@ func TestJSONModeEmitsValidNDJSON(t *testing.T) {
 	}
 }
 
+// TestJSONEventTypesMatchDocumentedSchema is the regression test for the
+// stable JSON "type" values documented in the README and
+// docs/ARCHITECTURE.md: exactly "event", "repeat_summary", and "anomaly".
+// There is no separate "repeat_final" type - a repeat_summary is used both
+// for periodic flushes and for the final flush of a pattern's count at
+// EOF/shutdown, and this test exercises both to prove it.
+func TestJSONEventTypesMatchDocumentedSchema(t *testing.T) {
+	var buf bytes.Buffer
+	opts := DefaultOptions()
+	opts.JSON = true
+	opts.FlushInterval = time.Second
+	r := New(&buf, opts)
+
+	now := time.Unix(0, 0)
+	r.Emit(Event{Fingerprint: 1, Severity: severity.Info, Template: "tmpl", RawLines: []string{"raw"}, IsNew: true})
+	r.Accumulate(1, severity.Info, "tmpl", now)
+	r.Tick(now.Add(2 * time.Second)) // periodic flush -> repeat_summary
+	r.Accumulate(1, severity.Info, "tmpl", now.Add(2*time.Second))
+	r.EmitAnomaly(Anomaly{Fingerprint: 2, Severity: severity.Error, Template: "db timeout", CurrentPerMin: 40, Bootstrap: true}, now)
+	r.Finalize(now.Add(3 * time.Second)) // final flush -> also repeat_summary
+
+	const (
+		typeEvent   = "event"
+		typeRepeat  = "repeat_summary"
+		typeAnomaly = "anomaly"
+	)
+	allowed := map[string]bool{typeEvent: true, typeRepeat: true, typeAnomaly: true}
+
+	seen := map[string]int{}
+	for _, l := range strings.Split(strings.TrimSpace(buf.String()), "\n") {
+		var v map[string]interface{}
+		if err := json.Unmarshal([]byte(l), &v); err != nil {
+			t.Fatalf("invalid JSON line %q: %v", l, err)
+		}
+		typ, _ := v["type"].(string)
+		if !allowed[typ] {
+			t.Fatalf("unexpected JSON type %q (only %v are documented), line: %q", typ, allowed, l)
+		}
+		if typ == "repeat_final" {
+			t.Fatalf("found a repeat_final event type, but no such type should ever be emitted")
+		}
+		seen[typ]++
+	}
+
+	if seen[typeRepeat] < 2 {
+		t.Fatalf("expected at least 2 repeat_summary events (one periodic, one final flush), got %d", seen[typeRepeat])
+	}
+	if seen[typeEvent] < 1 {
+		t.Fatalf("expected at least 1 event")
+	}
+	if seen[typeAnomaly] < 1 {
+		t.Fatalf("expected at least 1 anomaly")
+	}
+}
+
 func TestSingletonEventShowsNoCounter(t *testing.T) {
 	var buf bytes.Buffer
 	opts := DefaultOptions()

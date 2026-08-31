@@ -40,13 +40,17 @@ containing only:
 
 ```json
 {
+  "schema_version": 2,
   "logquiet_version": "v0.1.0",
   "generated_at": "2026-08-30T12:00:00Z",
   "session_duration_seconds": 42.1,
   "raw_lines": 100000,
   "displayed_events": 37,
   "suppressed_events": 99963,
-  "suppression_percentage": 99.96,
+  "logical_event_suppression_percentage": 99.96,
+  "raw_line_suppression_percentage": 99.94,
+  "displayed_raw_lines": 61,
+  "suppressed_raw_lines": 99939,
   "structural_patterns": 12,
   "warning_events": 3,
   "error_events": 5,
