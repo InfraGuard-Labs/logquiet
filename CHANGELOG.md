@@ -53,5 +53,5 @@ See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) "Known limitations" and
 plain accounting of what is heuristic versus deterministic, and where each
 heuristic's edge cases are.
 
-[Unreleased]: https://github.com/azimsiddiqui/logquiet/compare/v0.1.0...HEAD
-[0.1.0]: https://github.com/azimsiddiqui/logquiet/releases/tag/v0.1.0
+[Unreleased]: https://github.com/InfraGuard-Labs/logquiet/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/InfraGuard-Labs/logquiet/releases/tag/v0.1.0

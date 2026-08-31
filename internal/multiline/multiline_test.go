@@ -3,7 +3,7 @@ package multiline
 import (
 	"testing"
 
-	"github.com/azimsiddiqui/logquiet/internal/logline"
+	"github.com/InfraGuard-Labs/logquiet/internal/logline"
 )
 
 // feedAll feeds raw lines through Extract+Assembler exactly as the pipeline

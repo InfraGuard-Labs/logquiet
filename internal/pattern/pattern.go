@@ -45,8 +45,8 @@ import (
 	"container/list"
 	"time"
 
-	"github.com/azimsiddiqui/logquiet/internal/fingerprint"
-	"github.com/azimsiddiqui/logquiet/internal/severity"
+	"github.com/InfraGuard-Labs/logquiet/internal/fingerprint"
+	"github.com/InfraGuard-Labs/logquiet/internal/severity"
 )
 
 // Config tunes anomaly sensitivity and store bounds. Zero-value Config is

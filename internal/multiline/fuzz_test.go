@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/azimsiddiqui/logquiet/internal/logline"
+	"github.com/InfraGuard-Labs/logquiet/internal/logline"
 )
 
 func FuzzAssembler(f *testing.F) {

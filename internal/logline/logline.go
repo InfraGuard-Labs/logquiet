@@ -9,7 +9,7 @@ package logline
 import (
 	"regexp"
 
-	"github.com/azimsiddiqui/logquiet/internal/severity"
+	"github.com/InfraGuard-Labs/logquiet/internal/severity"
 )
 
 // leading timestamp shapes tried when no severity token was found at all

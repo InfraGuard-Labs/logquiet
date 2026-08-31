@@ -4,8 +4,8 @@ import (
 	"container/list"
 	"time"
 
-	"github.com/azimsiddiqui/logquiet/internal/fingerprint"
-	"github.com/azimsiddiqui/logquiet/internal/severity"
+	"github.com/InfraGuard-Labs/logquiet/internal/fingerprint"
+	"github.com/InfraGuard-Labs/logquiet/internal/severity"
 )
 
 // Store holds all currently tracked patterns, bounded to Config.MaxTrackedPatterns

@@ -14,11 +14,11 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/azimsiddiqui/logquiet/internal/config"
-	"github.com/azimsiddiqui/logquiet/internal/pipeline"
-	"github.com/azimsiddiqui/logquiet/internal/reader"
-	"github.com/azimsiddiqui/logquiet/internal/render"
-	"github.com/azimsiddiqui/logquiet/internal/stats"
+	"github.com/InfraGuard-Labs/logquiet/internal/config"
+	"github.com/InfraGuard-Labs/logquiet/internal/pipeline"
+	"github.com/InfraGuard-Labs/logquiet/internal/reader"
+	"github.com/InfraGuard-Labs/logquiet/internal/render"
+	"github.com/InfraGuard-Labs/logquiet/internal/stats"
 )
 
 // version is set at build time via -ldflags "-X main.version=vX.Y.Z".

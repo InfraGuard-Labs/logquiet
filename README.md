@@ -103,7 +103,7 @@ algorithm.
 ### Download a release binary
 
 Grab the binary for your platform from the
-[Releases page](https://github.com/azimsiddiqui/logquiet/releases) (Linux
+[Releases page](https://github.com/InfraGuard-Labs/logquiet/releases) (Linux
 amd64/arm64, macOS Intel/Apple Silicon, Windows amd64) alongside
 `SHA256SUMS.txt`, verify it (from the same directory you downloaded both
 into: `sha256sum -c SHA256SUMS.txt --ignore-missing`, or run
@@ -118,7 +118,7 @@ Requires only the Go toolchain (no other dependencies - see
 [SECURITY.md](SECURITY.md)):
 
 ```bash
-git clone https://github.com/azimsiddiqui/logquiet.git
+git clone https://github.com/InfraGuard-Labs/logquiet.git
 cd logquiet
 go build -o logquiet ./cmd/logquiet
 ```

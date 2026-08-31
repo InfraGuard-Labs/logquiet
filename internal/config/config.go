@@ -11,7 +11,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/azimsiddiqui/logquiet/internal/severity"
+	"github.com/InfraGuard-Labs/logquiet/internal/severity"
 )
 
 // Config is the fully-resolved set of options for one run.

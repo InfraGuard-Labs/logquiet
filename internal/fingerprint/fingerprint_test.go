@@ -3,7 +3,7 @@ package fingerprint
 import (
 	"testing"
 
-	"github.com/azimsiddiqui/logquiet/internal/severity"
+	"github.com/InfraGuard-Labs/logquiet/internal/severity"
 )
 
 func TestSameInputSameFingerprint(t *testing.T) {

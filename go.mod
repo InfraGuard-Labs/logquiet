@@ -1,3 +1,3 @@
-module github.com/azimsiddiqui/logquiet
+module github.com/InfraGuard-Labs/logquiet
 
 go 1.27.0

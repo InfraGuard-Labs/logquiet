@@ -6,7 +6,7 @@ package fingerprint
 import (
 	"hash/fnv"
 
-	"github.com/azimsiddiqui/logquiet/internal/severity"
+	"github.com/InfraGuard-Labs/logquiet/internal/severity"
 )
 
 // ID is a 64-bit structural fingerprint. Collisions are theoretically

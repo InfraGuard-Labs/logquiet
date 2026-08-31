@@ -9,9 +9,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/azimsiddiqui/logquiet/internal/config"
-	"github.com/azimsiddiqui/logquiet/internal/pipeline"
-	"github.com/azimsiddiqui/logquiet/internal/render"
+	"github.com/InfraGuard-Labs/logquiet/internal/config"
+	"github.com/InfraGuard-Labs/logquiet/internal/pipeline"
+	"github.com/InfraGuard-Labs/logquiet/internal/render"
 )
 
 // emptyStdin returns a real *os.File at EOF, since run() requires *os.File

@@ -9,15 +9,15 @@ import (
 	"strings"
 	"time"
 
-	"github.com/azimsiddiqui/logquiet/internal/config"
-	"github.com/azimsiddiqui/logquiet/internal/fingerprint"
-	"github.com/azimsiddiqui/logquiet/internal/logline"
-	"github.com/azimsiddiqui/logquiet/internal/multiline"
-	"github.com/azimsiddiqui/logquiet/internal/normalize"
-	"github.com/azimsiddiqui/logquiet/internal/pattern"
-	"github.com/azimsiddiqui/logquiet/internal/render"
-	"github.com/azimsiddiqui/logquiet/internal/severity"
-	"github.com/azimsiddiqui/logquiet/internal/stats"
+	"github.com/InfraGuard-Labs/logquiet/internal/config"
+	"github.com/InfraGuard-Labs/logquiet/internal/fingerprint"
+	"github.com/InfraGuard-Labs/logquiet/internal/logline"
+	"github.com/InfraGuard-Labs/logquiet/internal/multiline"
+	"github.com/InfraGuard-Labs/logquiet/internal/normalize"
+	"github.com/InfraGuard-Labs/logquiet/internal/pattern"
+	"github.com/InfraGuard-Labs/logquiet/internal/render"
+	"github.com/InfraGuard-Labs/logquiet/internal/severity"
+	"github.com/InfraGuard-Labs/logquiet/internal/stats"
 )
 
 // Pipeline holds all per-run state. It is not safe for concurrent use.

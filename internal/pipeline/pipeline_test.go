@@ -7,8 +7,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/azimsiddiqui/logquiet/internal/config"
-	"github.com/azimsiddiqui/logquiet/internal/render"
+	"github.com/InfraGuard-Labs/logquiet/internal/config"
+	"github.com/InfraGuard-Labs/logquiet/internal/render"
 )
 
 // letterize converts a non-negative int into a unique pure-alphabetic

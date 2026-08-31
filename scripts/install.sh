@@ -4,16 +4,16 @@
 # and installs it. Works as soon as a GitHub Release exists - no package
 # manager account required.
 #
-#   curl -fsSL https://raw.githubusercontent.com/azimsiddiqui/logquiet/main/scripts/install.sh | bash
+#   curl -fsSL https://raw.githubusercontent.com/InfraGuard-Labs/logquiet/main/scripts/install.sh | bash
 #
 # Or download and inspect it first (recommended for anything piped to a
 # shell you didn't write):
-#   curl -fsSLo install.sh https://raw.githubusercontent.com/azimsiddiqui/logquiet/main/scripts/install.sh
+#   curl -fsSLo install.sh https://raw.githubusercontent.com/InfraGuard-Labs/logquiet/main/scripts/install.sh
 #   less install.sh
 #   bash install.sh
 set -euo pipefail
 
-REPO="azimsiddiqui/logquiet"
+REPO="InfraGuard-Labs/logquiet"
 INSTALL_DIR="${LOGQUIET_INSTALL_DIR:-$HOME/.local/bin}"
 VERSION="${LOGQUIET_VERSION:-latest}"
 
