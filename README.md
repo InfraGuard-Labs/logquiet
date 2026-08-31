@@ -1,6 +1,6 @@
 # LogQuiet
 
-**LogQuiet makes noisy live logs readable by collapsing routine repetition while guaranteeing that new, error-level, and anomalously-frequent events always break through.**
+**LogQuiet makes noisy live logs readable by collapsing routine repetition while ensuring new, error-level, and anomalously frequent events are prioritized and surfaced.**
 
 ```bash
 kubectl logs -f deployment/api | logquiet
