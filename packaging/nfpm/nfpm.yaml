@@ -1,0 +1,50 @@
+# nfpm (https://nfpm.goreleaser.com) package definition for LogQuiet's
+# .deb and .rpm packages. Deliberately minimal: one binary, some doc
+# files, no service unit, no cron job, no created user, no network
+# listener, no telemetry, and no pre/post install scripts.
+#
+# GoReleaser's `nfpms:` section in ../../.goreleaser.yaml generates the
+# same package from a real tagged release automatically. This standalone
+# file exists so a specific version can be packaged on demand, outside a
+# full GoReleaser run, with precise control over the output filename
+# (e.g. to produce exactly logquiet_0.1.1_amd64.deb) - both configs must
+# be kept in sync if package contents change.
+#
+# Usage (VERSION and ARCH are required; BIN_DIR defaults to dist-v<version>
+# relative to the repo root, i.e. where scripts/build-release.sh-style
+# output for that version lives):
+#   VERSION=0.1.1 ARCH=amd64 nfpm package \
+#     --config packaging/nfpm/nfpm.yaml --packager deb --target dist-v0.1.1/
+#   VERSION=0.1.1 ARCH=arm64 nfpm package \
+#     --config packaging/nfpm/nfpm.yaml --packager rpm --target dist-v0.1.1/
+
+name: logquiet
+arch: ${ARCH}
+platform: linux
+version: ${VERSION}
+section: utils
+priority: optional
+maintainer: "LogQuiet maintainers <azimsiddiqui97@gmail.com>"
+vendor: InfraGuard-Labs
+homepage: https://github.com/InfraGuard-Labs/logquiet
+license: Apache-2.0
+description: |
+  Make noisy live logs readable: local, zero-config structural log
+  compaction. Collapses routine repetition while keeping new,
+  error-level, and anomalously frequent events visible. Fully local -
+  no network calls, no telemetry, no background services.
+
+contents:
+  - src: ../../dist-v${VERSION}/logquiet-v${VERSION}-linux-${ARCH}
+    dst: /usr/bin/logquiet
+    expand: true
+    file_info:
+      mode: 0755
+  - src: ../../LICENSE
+    dst: /usr/share/doc/logquiet/LICENSE
+    file_info:
+      mode: 0644
+  - src: ../../README.md
+    dst: /usr/share/doc/logquiet/README.md
+    file_info:
+      mode: 0644

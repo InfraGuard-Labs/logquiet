@@ -10,10 +10,18 @@ permissions:
 
 jobs:
   build:
-    name: Build and publish draft release
+    name: Build, package, and publish draft release
     runs-on: ubuntu-latest
     steps:
+      # actions/checkout on a tag-push trigger checks out exactly the
+      # tagged commit (GITHUB_SHA / GITHUB_REF_NAME for this event *is*
+      # the tag), not a later point on any branch - see
+      # docs/RELEASE_BUILD_RECORD.md for why that distinction matters.
+      # fetch-depth: 0 is required so GoReleaser can see prior tags for
+      # release-notes/changelog generation.
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - uses: actions/setup-go@v5
         with:
@@ -24,13 +32,21 @@ jobs:
           go build ./...
           go test ./... -count=1
           go vet ./...
+          test -z "$(gofmt -l .)"
 
-      - name: Build all release targets
-        run: bash scripts/build-release.sh "${GITHUB_REF_NAME}"
-
-      - name: Create draft GitHub Release
-        uses: softprops/action-gh-release@v2
+      - name: Run GoReleaser (binaries, .deb/.rpm, checksums, Homebrew formula)
+        uses: goreleaser/goreleaser-action@v6
         with:
-          draft: true
-          files: dist/*
-          generate_release_notes: true
+          distribution: goreleaser
+          version: "~> v2"
+          args: release --clean
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # No HOMEBREW_TAP_GITHUB_TOKEN / SCOOP_BUCKET_GITHUB_TOKEN is
+          # configured, and .goreleaser.yaml hard-codes skip_upload: true
+          # for both the brews and (if re-added) scoops sections - so
+          # this step cannot push a formula/manifest to another
+          # repository even if triggered. The GitHub Release itself is
+          # still created as a draft (release.draft: true in
+          # .goreleaser.yaml) - a maintainer reviews and publishes it
+          # manually, same as before this workflow used GoReleaser.

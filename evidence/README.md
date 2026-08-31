@@ -12,6 +12,77 @@ aspirational, hoped-for, or inferred facts. An empty subsection below is
 more honest, and more useful later, than a fabricated one - a claim that
 turns out to be invented undermines every true claim alongside it.
 
+See [docs/ADOPTION_EVIDENCE.md](../docs/ADOPTION_EVIDENCE.md) for what
+each category of evidence can and cannot prove, and
+[docs/METRICS_DEFINITIONS.md](../docs/METRICS_DEFINITIONS.md) for exact
+definitions (including what "verified" requires) before adding a number
+to [evidence/adoption/monthly-metrics.csv](adoption/monthly-metrics.csv).
+
+## Preservation workflow
+
+Every piece of evidence added to this directory (or referenced from it)
+should record these six things, so it stands on its own later without
+relying on anyone's memory of the context:
+
+1. **Date** - when the evidence was observed/captured, not when it was
+   added to this repository if the two differ.
+2. **Source URL** - where it came from, if it has one (a GitHub page, an
+   API endpoint, an external article).
+3. **Screenshot / PDF / original file** - the artifact itself, not just a
+   description of it. A number without the underlying screenshot/export
+   is not preserved evidence, it's a claim.
+4. **What it proves** (and, ideally, what it does NOT prove) - see
+   [docs/ADOPTION_EVIDENCE.md](../docs/ADOPTION_EVIDENCE.md) for the
+   per-category version of this distinction. Copy the relevant caveat
+   alongside the evidence rather than making a reader look it up.
+5. **Public or private** - whether the source itself is publicly visible
+   (a public GitHub issue) or was shared privately (an email, a private
+   Slack message) and therefore needs the next field before it can ever
+   be shown to anyone else.
+6. **Consent status**, if an identifiable person or organization is
+   involved - what they agreed to be recorded/named for, per the consent
+   fields in [docs/ADOPTER_FEEDBACK_FORM.md](../docs/ADOPTER_FEEDBACK_FORM.md)
+   and [.github/ISSUE_TEMPLATE/real-world-feedback.yml](../.github/ISSUE_TEMPLATE/real-world-feedback.yml).
+   Default to treating anything without explicit "yes, you may name us
+   publicly" consent as private, even if it arrived through a public
+   channel like a GitHub issue - a person filing an issue under their own
+   handle has not automatically agreed to being cited in a case study.
+
+Suggested per-category preservation targets, once something genuinely
+exists to preserve:
+
+- **GitHub releases**: a dated screenshot or saved HTML/PDF of the
+  release page, plus `SHA256SUMS.txt` for that release (already a
+  self-verifying artifact).
+- **Monthly release-download totals**: the JSON snapshot written by
+  [scripts/snapshot-public-metrics.sh](../scripts/snapshot-public-metrics.sh),
+  timestamped, kept alongside the corresponding row in
+  [evidence/adoption/monthly-metrics.csv](adoption/monthly-metrics.csv).
+- **Stars/forks snapshots**: same script/file as above.
+- **GitHub traffic** (unique visitors/clones): GitHub's traffic insights
+  page (`Insights > Traffic`) requires authenticated owner/maintainer
+  access and only retains 14 days of history - it is not reachable via
+  the public API used by `snapshot-public-metrics.sh`. Preserve this
+  manually and monthly: log in as a maintainer, screenshot the Traffic
+  page (both the visitor and clone graphs), and save the screenshot here
+  with the date. There is no way to automate this without owner
+  credentials, which this project's scripts deliberately do not require
+  or store.
+- **Issue/PR evidence**: the issue/PR's own URL (permanent and public by
+  default) is usually sufficient; add a saved copy only if the content
+  might be edited/deleted later.
+- **Impact reports**: the raw JSON file, reviewed against
+  [docs/IMPACT_REPORT.md](../docs/IMPACT_REPORT.md)'s schema before being
+  stored, with a note on how it was received (issue attachment, email,
+  etc.) and from whom (only if they consented to being identified).
+- **User confirmations / organization adoption / case studies**: the
+  original message or document (with the sender's permission to keep it),
+  or a summary plus the consent record, never a summary alone if consent
+  to quote/name was given.
+- **External mentions / integrations**: the URL, archived if the source
+  is the kind of page that tends to disappear (a saved PDF or
+  web-archive link alongside the live URL).
+
 ## Categories
 
 Each category below is a place to *add* evidence as it genuinely occurs,

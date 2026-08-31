@@ -44,7 +44,7 @@ class Logquiet < Formula
   end
 
   test do
-    assert_match "logquiet", shell_output("#{bin}/logquiet --version")
+    system "#{bin}/logquiet", "--version"
     assert_match "INFO hello", pipe_output("#{bin}/logquiet --plain", "[INFO] hello\n")
   end
 end

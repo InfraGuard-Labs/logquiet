@@ -8,6 +8,46 @@ before 1.0.0).
 
 ## [Unreleased]
 
+Packaging/distribution and adoption-evidence tooling. No behavior, flag,
+or schema change - see [docs/RELEASE_PROCESS.md](docs/RELEASE_PROCESS.md)
+"Recommended next version" for why this is planned as v0.1.1, not v0.2.0.
+
+### Added
+
+- GoReleaser + [nfpm](https://nfpm.goreleaser.com)-based release
+  automation (`.goreleaser.yaml`, `packaging/nfpm/nfpm.yaml`): generates
+  `.deb`/`.rpm` packages for linux/amd64 and linux/arm64 and a Homebrew
+  formula, in addition to the existing five raw binaries and
+  `SHA256SUMS.txt`. Publishing to a tap/bucket remains a separate, manual
+  step (`skip_upload: true`; see docs/RELEASE_PROCESS.md).
+- Hardened `scripts/install.sh`: `LOGQUIET_BASE_URL` override, upfront
+  `curl`/checksum-tool availability checks, actionable errors (including
+  a sudo hint) on a non-writable install directory, POSIX `sh`
+  compatibility (no bashisms), and a 12-scenario behavioral test suite
+  (`scripts/tests/test-install.sh`).
+- `docs/ADOPTION_EVIDENCE.md`, `docs/METRICS_DEFINITIONS.md`,
+  `docs/ADOPTER_FEEDBACK_FORM.md`: a privacy-preserving framework for
+  measuring and honestly characterizing external adoption - no
+  telemetry, nothing collected automatically, every metric sourced from
+  a public API or a user's own voluntary submission.
+- `.github/ISSUE_TEMPLATE/real-world-feedback.yml`: a structured,
+  entirely-optional issue template for real-world feedback, with an
+  explicit warning against pasting confidential logs/credentials.
+- `evidence/adoption/monthly-metrics.csv` (header only, no fabricated
+  data) and `scripts/snapshot-public-metrics.sh`, which pulls public
+  GitHub stars/forks/open-issue/release-download numbers with no
+  required credentials.
+- `docs/RELEASE_BUILD_RECORD.md`: records the exact source commit, Go
+  version, build flags, and SHA256 hashes behind a real local build of
+  the release artifacts.
+
+### Fixed
+
+- CLI `--help` text and the README both previously claimed important
+  events "always break through" / "never" silently absorbed - corrected
+  to accurately describe prioritization without an unproven absolute
+  guarantee.
+
 ## [0.1.0] - 2026-08-30
 
 Initial public release.

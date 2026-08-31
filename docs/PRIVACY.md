@@ -35,6 +35,13 @@ That is the complete list of I/O LogQuiet performs.
 
 ## The `--impact-report` file, exactly
 
+**Impact reports are generated locally and are never uploaded
+automatically.** LogQuiet has no code path that transmits one anywhere -
+see "No network calls, ever" above. If you choose to share one (for
+example, attaching it to a GitHub issue or the feedback form in
+[docs/ADOPTER_FEEDBACK_FORM.md](ADOPTER_FEEDBACK_FORM.md)), that is a
+separate, manual, entirely optional action you take yourself.
+
 Running `logquiet --impact-report report.json` writes a single JSON object
 containing only:
 

@@ -1,0 +1,184 @@
+name: Real-world feedback
+description: >-
+  Tell us how LogQuiet behaved against a real log stream. Every field is
+  optional except the warning below - identifying details are never
+  required.
+title: "[feedback] "
+labels:
+  - real-world-feedback
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for trying LogQuiet against real logs. This form mirrors
+        [docs/ADOPTER_FEEDBACK_FORM.md](https://github.com/InfraGuard-Labs/logquiet/blob/main/docs/ADOPTER_FEEDBACK_FORM.md) -
+        every field below is optional, and nothing here requires your
+        name, employer, or any identifying detail.
+
+  - type: markdown
+    attributes:
+      value: |
+        ## ⚠️ Do not paste confidential logs, credentials, tokens, or PII.
+        Describe *what* happened (e.g. "a CRITICAL line got folded into a
+        repeat counter") instead of pasting the line itself. A voluntarily
+        generated `--impact-report` file is safe to attach - it is
+        aggregate counts and percentages only, never raw log content. See
+        [docs/IMPACT_REPORT.md](https://github.com/InfraGuard-Labs/logquiet/blob/main/docs/IMPACT_REPORT.md).
+
+  - type: input
+    id: version
+    attributes:
+      label: LogQuiet version
+      description: Output of `logquiet --version`
+      placeholder: v0.1.0
+    validations:
+      required: false
+
+  - type: dropdown
+    id: environment
+    attributes:
+      label: Environment
+      multiple: true
+      options:
+        - Kubernetes
+        - Docker
+        - journalctl / systemd
+        - CI/CD
+        - Application logs (plain files)
+        - Other (describe below)
+    validations:
+      required: false
+
+  - type: dropdown
+    id: runtime
+    attributes:
+      label: Runtime / language of the logs you ran LogQuiet against
+      multiple: true
+      options:
+        - Java
+        - Go
+        - Python
+        - Node
+        - Other (describe below)
+    validations:
+      required: false
+
+  - type: input
+    id: volume
+    attributes:
+      label: Approximate log volume
+      description: Order of magnitude only, e.g. "~10K lines/day" - not a log file.
+      placeholder: "~500K lines/day"
+    validations:
+      required: false
+
+  - type: textarea
+    id: what-worked
+    attributes:
+      label: What worked?
+      description: Free text. Describe symptoms, not raw log content.
+    validations:
+      required: false
+
+  - type: textarea
+    id: what-failed
+    attributes:
+      label: What failed?
+      description: Free text. Describe symptoms, not raw log content.
+    validations:
+      required: false
+
+  - type: textarea
+    id: incorrectly-suppressed
+    attributes:
+      label: Anything incorrectly suppressed?
+      description: >-
+        A message you cared about that got collapsed into a repeat
+        counter. Describe the shape of the message, not its literal
+        content, if it's sensitive.
+    validations:
+      required: false
+
+  - type: textarea
+    id: not-suppressed
+    attributes:
+      label: Anything noisy that was NOT suppressed?
+      description: Repetitive noise LogQuiet failed to collapse.
+    validations:
+      required: false
+
+  - type: textarea
+    id: frequency-spike
+    attributes:
+      label: Frequency-spike behavior
+      description: >-
+        Did anomaly detection fire when you expected it to? Miss
+        something? False-positive? See
+        docs/TECHNICAL_METHOD.md section 7 for how it's designed to work.
+    validations:
+      required: false
+
+  - type: textarea
+    id: stack-trace
+    attributes:
+      label: Stack-trace / multiline behavior
+      description: >-
+        Did tracebacks/panics/stack traces get grouped correctly? Which
+        language/framework?
+    validations:
+      required: false
+
+  - type: textarea
+    id: impact-report
+    attributes:
+      label: Impact report (optional)
+      description: >-
+        Paste the contents of a `--impact-report` JSON file here if you'd
+        like to share one. It contains aggregate counts and percentages
+        only - review it yourself first, same as with any file you share.
+      render: json
+    validations:
+      required: false
+
+  - type: dropdown
+    id: keep-using
+    attributes:
+      label: Would you keep using LogQuiet?
+      options:
+        - "Yes"
+        - "No"
+        - Not sure
+    validations:
+      required: false
+
+  - type: dropdown
+    id: consent-mention
+    attributes:
+      label: May we mention your organization publicly?
+      description: Defaults to "No." Only say "Yes" if you mean it.
+      options:
+        - "No"
+        - "Yes"
+    validations:
+      required: false
+
+  - type: dropdown
+    id: consent-contact
+    attributes:
+      label: May we contact you about a case study?
+      description: >-
+        Defaults to "No." If "Yes," please leave a way to reach you in
+        the field below - only used for this purpose.
+      options:
+        - "No"
+        - "Yes"
+    validations:
+      required: false
+
+  - type: input
+    id: contact
+    attributes:
+      label: Contact (only if you said "Yes" above)
+      description: Optional. An email, GitHub handle, or similar.
+    validations:
+      required: false

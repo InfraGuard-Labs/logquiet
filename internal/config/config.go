@@ -183,12 +183,21 @@ EXAMPLES
   tail -F application.log | logquiet
   journalctl -f | logquiet
   logquiet app.log
+  logquiet --impact-report report.json app.log   # local, content-free stats you can choose to share
 
 LogQuiet reads a log stream, structurally normalizes each line (timestamps,
 UUIDs, IPs, IDs, durations, and similar variable data become placeholders),
 collapses routine repetition into periodic compact repeat summaries, and
-always surfaces new, error-level, or anomalously-frequent events. No
-configuration is required.
+prioritizes and surfaces new, error-level, and anomalously frequent
+events. No configuration is required.
+
+IMPACT REPORTS
+  -impact-report writes a local, aggregate-only JSON summary (counts and
+  percentages - never raw log content, hostnames, IPs, or any observed
+  value) to the path you choose. It is written only when you pass this
+  flag, and nothing is ever uploaded automatically. Sharing the resulting
+  file afterward - e.g. attaching it to a GitHub issue - is entirely your
+  choice. See docs/IMPACT_REPORT.md for the full schema.
 
 FLAGS
 `)

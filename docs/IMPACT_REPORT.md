@@ -3,8 +3,12 @@
 `logquiet --impact-report <path>` writes a single JSON object to `<path>`
 when the input stream ends (EOF, Ctrl+C, or SIGTERM). It is entirely
 optional - nothing is written unless you pass this flag - and it never
-contains raw log content. See [PRIVACY.md](PRIVACY.md) for the privacy
-rationale; this document is the field-by-field technical reference.
+contains raw log content. **Impact reports are generated locally and are
+never uploaded automatically**; LogQuiet has no network code at all (see
+[PRIVACY.md](PRIVACY.md)). Sharing a generated report - e.g. attaching it
+to a GitHub issue, or via [ADOPTER_FEEDBACK_FORM.md](ADOPTER_FEEDBACK_FORM.md)
+- is a separate, manual, optional action you take yourself, never
+something this tool does for you.
 
 ## Purpose
 
@@ -121,3 +125,19 @@ kubectl logs -f deployment/api | logquiet --impact-report impact.json
 # ... let it run, then Ctrl+C ...
 cat impact.json
 ```
+
+## Voluntarily sharing one
+
+Nothing above uploads `impact.json` anywhere - it just sits on disk where
+you wrote it. If LogQuiet was useful and you'd like to share evidence of
+that (entirely optional), review the file yourself first (it is small,
+plain JSON - read it before sending it anywhere, the same as you would
+any file), then either:
+
+- attach it to the real-world feedback issue template:
+  `.github/ISSUE_TEMPLATE/real-world-feedback.yml` in this repository, or
+- include it with the form described in
+  [ADOPTER_FEEDBACK_FORM.md](ADOPTER_FEEDBACK_FORM.md).
+
+See [ADOPTION_EVIDENCE.md](ADOPTION_EVIDENCE.md) for what a voluntarily
+shared impact report can and cannot demonstrate.

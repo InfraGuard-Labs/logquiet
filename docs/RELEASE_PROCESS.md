@@ -26,6 +26,33 @@ for `v1.0.0` is: a period of real external usage with no critical defects
 reported, plus whatever flag/schema changes that usage motivates, made
 *before* the API is declared stable.
 
+## Recommended next version: v0.1.1, not v0.2.0
+
+The packaging/distribution work (GoReleaser + nfpm automation, `.deb`/
+`.rpm` generation, a hardened `install.sh`, Homebrew/Scoop template
+refinement) adds no new LogQuiet *behavior* - no new flag, no changed
+default, no schema change. Per [Semantic Versioning](https://semver.org/)
+and this project's own stated policy above ("minor version bumps (0.x.0)
+may include breaking changes to flags or the JSON/impact-report schema"),
+a minor bump is reserved for exactly that kind of user-facing change.
+Packaging/distribution tooling is not part of the versioned API surface a
+user's scripts or flags depend on, so it belongs in a patch release:
+**v0.1.1**. Reserve v0.2.0 for the next release that actually changes a
+flag, default, or schema.
+
+## Known issue blocking the "latest version" install path
+
+As of this writing, `v0.1.0` is marked as a **pre-release** on GitHub.
+GitHub's `/repos/{owner}/{repo}/releases/latest` API endpoint deliberately
+excludes pre-releases, which makes `scripts/install.sh`'s default
+`LOGQUIET_VERSION=latest` resolution 404 (confirmed by running the script
+against the live release). Pinning `LOGQUIET_VERSION=v0.1.0` explicitly
+works correctly end-to-end (also confirmed against the live release, in a
+disposable container). Un-mark `v0.1.0` as a pre-release (or ensure the
+next tagged release is published as a full release, not a pre-release) to
+restore the default "latest" path for new users - this is a release-page
+setting change, not a code or script change.
+
 ## Artifact/source traceability
 
 Published binaries must be built from the exact commit the version tag
@@ -45,15 +72,44 @@ relationship is checkable rather than assumed.
    event is missed: `go run ./benchmarks/correctness`.
 4. Tag: `git tag -a vX.Y.Z -m "vX.Y.Z"` and push the tag.
 5. The release workflow (`.github/workflows/release.yml`) triggers on the
-   tag push and:
+   tag push and runs [GoReleaser](https://goreleaser.com) against
+   [`.goreleaser.yaml`](../.goreleaser.yaml), which:
    - Cross-compiles for linux/amd64, linux/arm64, darwin/amd64,
-     darwin/arm64, windows/amd64 with `-ldflags "-X main.version=vX.Y.Z"`.
+     darwin/arm64, windows/amd64 with `-trimpath -ldflags "-s -w -X
+     main.version=vX.Y.Z"` (same reproducible-build flags
+     `scripts/build-release.sh` uses).
+   - Packages `.deb` and `.rpm` for linux/amd64 and linux/arm64 via
+     [nfpm](https://nfpm.goreleaser.com) (embedded in GoReleaser) - see
+     [`packaging/nfpm/nfpm.yaml`](../packaging/nfpm/nfpm.yaml).
    - Produces a `SHA256SUMS.txt` covering every artifact.
-   - Creates a draft GitHub Release with the binaries, checksums file, and
-     the relevant CHANGELOG section as the release body.
+   - Generates a Homebrew formula from the same template logic as
+     `packaging/homebrew/logquiet.rb.tmpl`, but does **not** push it
+     anywhere (`skip_upload: true` is hard-coded in `.goreleaser.yaml`
+     until a real tap repository and credentials exist).
+   - Creates a draft GitHub Release with the binaries, packages, checksums
+     file, and the relevant CHANGELOG section as the release body.
 6. A maintainer reviews the draft release and publishes it manually - the
    workflow never auto-publishes, by design, so a human always looks at
    the final artifact list before it goes out.
+7. Separately, fill in `packaging/scoop/logquiet.json.tmpl`'s
+   `REPLACE_WITH_*` placeholders with the real version and
+   `logquiet-vX.Y.Z-windows-amd64.exe` SHA256 from the published release's
+   `SHA256SUMS.txt` (GoReleaser does not generate this one - see
+   "Package manager metadata" below for why), and publish it to
+   `InfraGuard-Labs/scoop-bucket` once that repository exists.
+
+### Local validation before tagging (no publish)
+
+```bash
+docker run --rm -v "$PWD":/src -w /src goreleaser/goreleaser:latest \
+  release --snapshot --clean --skip=publish
+```
+
+Produces real binaries, `.deb`/`.rpm` packages, checksums, and a generated
+Homebrew formula under `dist-goreleaser/` (a separate directory from
+`dist/`, which holds the actual hand-verified release artifacts - see
+[RELEASE_BUILD_RECORD.md](RELEASE_BUILD_RECORD.md) - so a snapshot run
+can never overwrite them). Publishes nothing.
 
 ## Manual local build (what the release workflow automates)
 
@@ -73,21 +129,45 @@ for the exact, current invocation.)
 
 ## Package manager metadata
 
-Prepared but not yet published (publishing requires accounts this project
-does not control autonomously - see the final report for what remains a
+Prepared but not yet published (publishing requires accounts/repositories
+this process does not create autonomously - see below for what remains a
 manual, approved step):
 
-- **Homebrew**: a formula template lives at
-  `packaging/homebrew/logquiet.rb.tmpl`. Publishing it means creating (or
-  getting accepted into) a tap, which requires a GitHub account/organization
-  decision - not made automatically by this process.
+- **Homebrew**: `.goreleaser.yaml`'s `brews:` section generates a real
+  formula on every release (verified: matches
+  `packaging/homebrew/logquiet.rb.tmpl`'s structure, Ruby-syntax-checked).
+  Publishing it means creating `InfraGuard-Labs/homebrew-tap` (confirmed,
+  as of this writing, not to exist yet - `GET
+  api.github.com/repos/InfraGuard-Labs/homebrew-tap` returns 404) and
+  removing `skip_upload: true` plus configuring a token with write access
+  to that repo - a deliberate, one-time manual step, not automatic.
 - **Scoop** (Windows): a manifest template lives at
-  `packaging/scoop/logquiet.json.tmpl`. Publishing it means submitting to
-  a bucket (or hosting one), same caveat as above.
+  `packaging/scoop/logquiet.json.tmpl` (valid JSON, verified). GoReleaser
+  does *not* generate this one automatically - its built-in Scoop pipe
+  requires a zip-format Windows archive, and this project ships a raw
+  `.exe` to match the existing release-asset naming convention (see the
+  comment in `.goreleaser.yaml` above the omitted `scoops:` section for
+  the full reasoning) - so the manifest is filled in by hand from
+  `SHA256SUMS.txt` each release. Publishing means creating
+  `InfraGuard-Labs/scoop-bucket` (also confirmed not to exist yet, same
+  404 check) and pushing the filled-in manifest there.
+- **`.deb` / `.rpm`**: generated by `.goreleaser.yaml`'s `nfpms:` section
+  (via [nfpm](https://nfpm.goreleaser.com)) and attached directly to the
+  draft GitHub Release - no separate repository or account needed, unlike
+  a Homebrew tap or Scoop bucket. Validated (metadata + contents +
+  install/run/uninstall) with `dpkg-deb`/`rpm` in disposable containers;
+  see `docs/RELEASE_BUILD_RECORD.md`-style evidence for the exact commands
+  used, if recorded for a given release.
 - **Shell installer**: `scripts/install.sh` downloads the correct release
   asset for the running platform and verifies its checksum against
   `SHA256SUMS.txt` before installing - usable as soon as a GitHub Release
-  exists, no additional account needed.
+  exists, no additional account needed. Supports `LOGQUIET_VERSION`,
+  `LOGQUIET_INSTALL_DIR`, and `LOGQUIET_BASE_URL` overrides; see
+  `scripts/tests/test-install.sh` for its behavioral test suite
+  (12 scenarios: the 5 supported OS/arch combinations, an unsupported
+  architecture, an unsupported OS, a failed download, a 404, a checksum
+  mismatch, a non-writable destination, a missing checksum tool, and a
+  missing `curl`).
 
 ## Verifying a downloaded release
 

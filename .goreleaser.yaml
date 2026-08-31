@@ -1,0 +1,133 @@
+# GoReleaser configuration for LogQuiet.
+#
+# This automates exactly what scripts/build-release.sh and
+# docs/RELEASE_PROCESS.md already do by hand (reproducible cross-compiled
+# binaries, SHA256SUMS.txt) and adds .deb/.rpm packaging (via nfpm,
+# bundled into GoReleaser) plus Homebrew/Scoop manifest *generation*.
+#
+# This file does NOT publish anything on its own in this repository's
+# current state: the `brews`/`scoops` sections below have
+# `skip_upload: true` hard-coded, so even a real `goreleaser release` run
+# cannot push a formula/manifest commit until that is deliberately
+# changed *and* a real tap/bucket repository and credentials exist (see
+# docs/RELEASE_PROCESS.md "Package manager metadata"). The GitHub Release
+# itself is created as a draft (see .github/workflows/release.yml), so a
+# human still reviews and publishes it manually, same as today.
+#
+# Local validation (produces real artifacts under dist/, publishes
+# nothing):
+#   goreleaser release --snapshot --clean --skip=publish
+# or, without installing GoReleaser locally:
+#   docker run --rm -v "$PWD":/src -w /src goreleaser/goreleaser:latest \
+#     release --snapshot --clean --skip=publish
+version: 2
+
+project_name: logquiet
+
+# Deliberately NOT "dist" - that directory is scripts/build-release.sh's
+# output and holds the actual, hand-verified release artifacts (see
+# docs/RELEASE_BUILD_RECORD.md). `goreleaser release --clean` empties its
+# configured dist directory unconditionally; pointing it at "dist" would
+# silently destroy those verified binaries on every local snapshot run.
+dist: dist-goreleaser
+
+before:
+  hooks:
+    - go mod tidy
+
+builds:
+  - id: logquiet
+    main: ./cmd/logquiet
+    binary: logquiet
+    env:
+      - CGO_ENABLED=0
+    flags:
+      - -trimpath
+    ldflags:
+      - -s -w -X main.version=v{{ .Version }}
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    ignore:
+      - goos: windows
+        goarch: arm64
+
+# Raw binaries, not tarballs/zips - matches the filename convention
+# already documented in README.md and used by scripts/install.sh:
+# logquiet-vX.Y.Z-<os>-<arch>[.exe].
+archives:
+  - id: logquiet
+    formats: [binary]
+    name_template: "logquiet-v{{ .Version }}-{{ .Os }}-{{ .Arch }}"
+
+checksum:
+  name_template: "SHA256SUMS.txt"
+  algorithm: sha256
+
+# .deb / .rpm packages (linux builds only - nfpm ignores darwin/windows
+# automatically). Deliberately minimal: a single binary, no service unit,
+# no cron job, no created user, no network listener, no telemetry, no
+# postinstall/preremove scripts beyond nfpm's own defaults (none set
+# here).
+nfpms:
+  - id: logquiet
+    package_name: logquiet
+    file_name_template: "logquiet_{{ .Version }}_{{ .Arch }}"
+    vendor: InfraGuard-Labs
+    homepage: https://github.com/InfraGuard-Labs/logquiet
+    maintainer: LogQuiet maintainers <azimsiddiqui97@gmail.com>
+    description: |
+      Make noisy live logs readable: local, zero-config structural log
+      compaction. Collapses routine repetition while keeping new,
+      error-level, and anomalously frequent events visible. Fully local -
+      no network calls, no telemetry.
+    license: Apache-2.0
+    formats:
+      - deb
+      - rpm
+    bindir: /usr/bin
+    section: utils
+    contents:
+      - src: ./LICENSE
+        dst: /usr/share/doc/logquiet/LICENSE
+      - src: ./README.md
+        dst: /usr/share/doc/logquiet/README.md
+
+brews:
+  - name: logquiet
+    repository:
+      owner: InfraGuard-Labs
+      name: homebrew-tap
+    directory: Formula
+    homepage: https://github.com/InfraGuard-Labs/logquiet
+    description: "Make noisy live logs readable: local, zero-config structural log compaction"
+    license: Apache-2.0
+    test: |
+      system "#{bin}/logquiet", "--version"
+    install: |
+      bin.install "logquiet"
+    skip_upload: true
+
+# No `scoops:` section: GoReleaser's built-in Scoop pipe only supports
+# `use: archive` with a zip-format Windows archive, but this project's
+# release convention (already documented in README.md, referenced by
+# scripts/install.sh and SHA256SUMS.txt, and matching the existing v0.1.0
+# release assets) ships a raw, uncompressed .exe - switching that to a
+# zip purely to satisfy GoReleaser's automation would ripple into every
+# doc and script that names an exact release-asset filename, for no
+# behavioral benefit (Scoop itself supports installing a raw .exe URL
+# directly). The hand-maintained template at
+# packaging/scoop/logquiet.json.tmpl already does this correctly and
+# stays the source of truth for the Scoop manifest; see
+# docs/RELEASE_PROCESS.md for how it's filled in per release.
+
+release:
+  github:
+    owner: InfraGuard-Labs
+    name: logquiet
+  draft: true
+  mode: keep-existing

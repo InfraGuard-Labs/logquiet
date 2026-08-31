@@ -4,6 +4,8 @@
 /fixturegen
 /diag.exe
 /dist/
+/dist-goreleaser/
+/dist-v0.1.1/
 *.test
 *.prof
 .DS_Store
