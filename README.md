@@ -1,6 +1,6 @@
 # LogQuiet
 
-**LogQuiet makes noisy live logs readable by collapsing routine repetition while ensuring new, error-level, and anomalously frequent events are prioritized and surfaced.**
+**LogQuiet makes noisy live logs readable by collapsing routine repetition while prioritizing and surfacing new, error-level, and anomalously frequent events.**
 
 ```bash
 kubectl logs -f deployment/api | logquiet
@@ -82,6 +82,13 @@ collapse into counters, and a message that only happened once
 (`User 10829 requested page /dashboard`) is shown once, plainly, with its
 real value. See "How rendering actually works" below for exactly why the
 header lines look the way they do.
+
+## Why LogQuiet?
+
+- Collapse repetitive live-log noise automatically
+- Keep errors and stack traces visible
+- Surface sudden frequency spikes
+- Run locally with no AI, cloud service, or telemetry
 
 ## Why this exists
 
@@ -211,8 +218,9 @@ visibly updates.
 An error occurring at 280 events/minute against a historical baseline of
 0.1/minute is not "just more repetition" - it may be the incident itself.
 LogQuiet tracks each pattern's own rolling rate against a slowly-adapting
-baseline and raises a frequency-spike banner, never silently absorbed into
-a routine counter:
+baseline and raises a frequency-spike banner rather than silently folding
+the spike into a routine counter (see Limitations below for the wall-clock
+detection window this depends on):
 
 ```
 🚨 FREQUENCY SPIKE
