@@ -19,7 +19,7 @@ jobs:
       # docs/RELEASE_BUILD_RECORD.md for why that distinction matters.
       # fetch-depth: 0 is required so GoReleaser can see prior tags for
       # release-notes/changelog generation.
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
